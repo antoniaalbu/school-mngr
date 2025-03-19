@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.section {
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.first-section {
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  height: 25vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-top: 30px;
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.site-name img {
+  width: 70px;
+  height: 70px;
+}
+
+.site-name{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.site-name h1{
+  font-size: 15px;
+  color: black;
+  font-weight: 400;
+  animation: slide-in-left 0.8s ease-out forwards;
+}
+
+.greeting-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  width: 40%;
+}
+
+.greeting-text h1{
+  font-size: 30px;
+  font-weight: 400;  
+  color: black;
+  animation: slide-in-left 0.8s ease-out forwards;
+}
+
+.my-text h1{
+  font-family: "Cedarville Cursive", cursive;
+  font-size: 50px;
+}
+
+.log-in-button {
+  color: rgb(0, 0, 0);
+  background-color: white;
+  text-decoration: none;
+  font-weight: normal;
+  padding: 10px 60px;
+  display: block;
+  border-radius: 20px;
+  border: 2px solid #000000;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+ }
+ 
+ .log-in-button::before {
+  content: '';
+  width: 0;
+  height: 3em;
+  border-radius: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, #94daff 0%, #94daff 100%);
+  transition: .5s ease;
+  display: block;
+  z-index: -1;
+ }
+ 
+ .log-in-button:hover::before {
+  width: 12em;
+ }
+
+.last-section {
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  height: 75vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+}
+
+.picture {
+  width: 80%;
+  height: 100%;
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  overflow: hidden; 
+}
+
+.picture {
+  position: relative; 
+  width: 80%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s ease-in-out;
+}
+
+.picture img:hover {
+  transform: scale(1.1);
+}
+
+@keyframes slide-in-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.card {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%; 
+  height: 30%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0; 
+  transition: opacity 0.3s ease-in-out;
+  padding: 10px;
+  text-align: center;
+ 
+}
+
+.picture:hover .card {
+  opacity: 1;
+  animation: slide-in-bottom 0.5s ease-out forwards;
+}
+
+

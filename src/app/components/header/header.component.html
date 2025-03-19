@@ -1,0 +1,24 @@
+<header [class.sticky]="sticky">
+  <nav class="navbar">
+    <div class="nav-container">
+
+      <div class="menu-toggle" (click)="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+
+      <ul class="nav-menu" [class.show]="menuOpen">
+        <li *ngFor="let item of menu" class="nav-item">
+          <a [routerLink]="item.route" class="nav-link" (click)="closeMenu()">
+            {{ item.name }}
+          </a>
+        </li>
+      </ul>
+
+     
+
+      
+    </div>
+  </nav>
+</header>
