@@ -104,7 +104,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-image: linear-gradient(to right, #94daff 0%, #94daff 100%);
+  background-image: linear-gradient(to right, rgb(137, 197, 160) 0%, rgb(137, 197, 160) 100%);
+  color: white;
   transition: .5s ease;
   display: block;
   z-index: -1;
