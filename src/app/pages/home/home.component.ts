@@ -18,10 +18,5 @@ export class HomeComponent {
     this.router.navigate(['/auth']);
   }
 
-  displayedText: string = ''; // Initially empty
-
-  displayText(): void {
-    this.displayedText = "Invest in yourself more.";
-  }
   
 }

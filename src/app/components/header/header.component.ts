@@ -17,8 +17,6 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent {
   menu: MenuItem[] = [];
   sticky = false;
-  isAuthenticated = false;
-  private userSub!: Subscription;
   menuOpen = false;
 
   constructor(
@@ -33,9 +31,7 @@ export class HeaderComponent {
     this.closeMenu();
   }
 
-  ngOnDestroy(): void {
-    this.userSub.unsubscribe();
-  }
+  
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;

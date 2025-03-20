@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 export class FooterComponent {
   sticky = true;
   transparent = false;
-  footerText = '© Expense Tracker App'; 
+  footerText = '© School Manager App'; 
 
   constructor(
   ) {}
