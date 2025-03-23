@@ -10,12 +10,15 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { StudentComponent } from './app/student/student.component';
 import { TeacherComponent } from './app/teacher/teacher.component';
 import { PrincipalComponent } from './app/principal/principal.component';
-import { AuthGuard } from './app/auth.guard';
+
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+
 
 const routes: Routes = [
-  { path: 'student', component: StudentComponent, canActivate: [AuthGuard], data: { role: 'student' } },
+  { path: 'student', component: StudentComponent },
   { path: 'teacher', component: TeacherComponent},
-  { path: 'principal', component: PrincipalComponent, canActivate: [AuthGuard], data: { role: 'principal' } },
+  { path: 'principal', component: PrincipalComponent },
   { path: 'auth', component: LoginComponent},
   { path: '', component: HomeComponent },
 ];
@@ -25,6 +28,8 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
-  ],
+    provideFirestore(() => getFirestore()),
+    provideStore(),
+    provideEffects()
+],
 });
