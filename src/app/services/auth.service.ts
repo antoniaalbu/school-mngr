@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, user} from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, UserCredential, User } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +11,22 @@ export class AuthService {
   private currentUserRole: string | undefined;
   private auth: Auth = inject(Auth);  // Inject Firebase Auth
   private firestore: Firestore = inject(Firestore);  // Inject Firestore
+  private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
 
-  getCurrentUser(): Observable<any> {
-    return user(this.auth);  // Return an observable of the current user
+  constructor() {
+    // If a user is already logged in, populate the currentUserSubject
+    const user = this.auth.currentUser;
+    if (user) {
+      this.setCurrentUser(user);
+    }
   }
+
+  // Get the current logged-in user
+getCurrentUser(): User | null {
+  console.log(this.currentUserSubject.value ?? null);
+  return this.currentUserSubject.value ?? null;  // Return the current user or null if not available
+}
 
   register(email: string, password: string, name: string, role: string): Promise<void> {
     console.log('Attempting to register user with email:', email);
@@ -29,6 +41,7 @@ export class AuthService {
 
         // Store the user details in Firestore, including the role
         return setDoc(doc(this.firestore, 'users', user.uid), {
+          uid: user.uid,
           name: name,
           email: email,
           role: role, // Use the passed role here
@@ -36,38 +49,39 @@ export class AuthService {
         });
       })
       .catch((error) => {
-        // Log error details for debugging
         console.error('Error during registration:', error);
-        
-        // If the error is Firebase specific, log the code and message
-        if (error.code) {
-          console.error(`Firebase Error Code: ${error.code}`);
-        }
-        if (error.message) {
-          console.error(`Firebase Error Message: ${error.message}`);
-        }
-        
-        // Throw the error to be caught by the calling component/service
-        throw error;
+        throw error;  // Throw the error to be caught by the calling component/service
       });
   }
 
-  async login(email: string, password: string): Promise<any> {
-    const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-    const user = userCredential.user;
-    const userProfile = await this.getUserProfile(user.uid);
+  // Update the BehaviorSubject with the current user and role
+  private setCurrentUser(user: User) {
+    this.currentUserSubject.next(user);  // Set the current user in BehaviorSubject
     
-    // Store the role in the service
-    this.currentUserRole = userProfile.role;
-    
-    return { ...user, role: this.currentUserRole };  // Return user data with role
+    // Fetch user profile to get the role
+    this.getUserProfile(user.uid).then((userProfile) => {
+      this.currentUserRole = userProfile.role;
+      console.log('User role set:', this.currentUserRole);
+    }).catch((error) => {
+      console.error('Error fetching user profile:', error);
+    });
+  }
+
+  async login(email: string, password: string): Promise<User> {
+    try {
+      const userCredential: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
+      const user = userCredential.user;
+      this.setCurrentUser(user);  // Set the logged-in user in BehaviorSubject
+      return user;  // Return the user object
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
   }
 
   getRole(): string | undefined {
-    console.log(this.currentUserRole);
     return this.currentUserRole;  // Retrieve the stored role
   }
-  
 
   // Retrieve user profile from Firestore
   private getUserProfile(uid: string): Promise<any> {

@@ -1,0 +1,113 @@
+/* Container for the entire course section */
+.course-container {
+  padding: 30px;
+  margin: 30px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #f7f7f7, #ffffff);
+  transition: all 0.3s ease-in-out;
+}
+
+.course-container:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Styling for the loading state */
+.loading {
+  font-size: 20px;
+  color: #3498db;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Styling for errors */
+.error {
+  font-size: 20px;
+  color: #e74c3c;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Styling for the course list */
+ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 20px;
+}
+
+/* Styling for individual course list items */
+li {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 17px;
+  transition: all 0.3s ease;
+}
+
+li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Highlight the course name */
+li span.course-name {
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+/* Styling for course description or additional info */
+li span.course-description {
+  font-size: 15px;
+  color: #7f8c8d;
+  margin-left: 10px;
+}
+
+/* Display "No courses enrolled" text with better visibility */
+.no-courses {
+  font-size: 20px;
+  color: #95a5a6;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 20px;
+  font-style: italic;
+}
+
+/* Keyframe animation for fade-in effect */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Styling for course container responsiveness */
+@media (max-width: 768px) {
+  .course-container {
+      padding: 20px;
+      margin: 20px;
+  }
+
+  li {
+      padding: 12px;
+      font-size: 16px;
+  }
+
+  .loading,
+  .error {
+      font-size: 18px;
+  }
+
+  .no-courses {
+      font-size: 18px;
+  }
+}

@@ -19,8 +19,6 @@ export class LoginComponent implements OnInit {
   role: string = ''; 
   errorMessage: string = '';
 
-  
-
   constructor(private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -57,7 +55,7 @@ export class LoginComponent implements OnInit {
         this.redirectBasedOnRole(role);  // Pass the role here
       } else {
         console.log('Role is undefined. Redirecting to login page.');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/auth']);
       }
     } catch (error: any) {
       this.errorMessage = error.message;
