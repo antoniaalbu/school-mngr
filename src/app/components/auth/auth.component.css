@@ -12,29 +12,14 @@
   gap: 45px;  
 }
 
-.my-text {
-  font-family: "Cedarville Cursive", cursive;
-  font-size: 55px;
-  color: white;
-  margin-top: -40px;
-  animation: zoomIn 0.5s ease-out; 
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: white;
-  width: 15.5em;
-  height: 22.5em;
-  border: 2px solid rgb(21, 76, 42);
-  box-shadow:
-    -10px 0px 0px rgb(21, 76, 42),
-    -10px 5px 5px rgb(0, 0, 0, 0.2);
-  overflow: hidden;
-  position: relative;
-  transition: all 0.25s ease;
-  animation: zoomIn 0.5s ease-out; 
+.wrapper {
+  --input-focus: #2d8cf0;
+  --font-color: #323232;
+  --font-color-sub: #666;
+  --bg-color: #fff;
+  --bg-color-alt: #c7c2bd;
+  --main-color: #323232;
+  animation: zoomIn 0.5s ease-out;
 }
 
 @keyframes zoomIn {
@@ -48,268 +33,189 @@
   }
 }
 
-.form:hover{
-  transform: scale(1.1);
-}
 
-
-#name-area,
-#surname-area,
-#login-area,
-#email-area,
-#password-area,
-#footer-area {
+.switch {
+  transform: translateY(-200px);
   position: relative;
-  z-index: 2;
-}
-
-#login-area {
-  width: 100%;
-  height: 3.5em;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-
-#login-area p {
-  top: 0.35em;
-  font-size: 1.5em;
-  font-weight: bold;
-  position: absolute;
-  z-index: 2;
-}
-
-#login-area #behind {
-  top: 60%;
-  font-size: 1em;
-  font-weight: bold;
-  position: absolute;
-  z-index: 1;
-}
-
-#behind {
-  position: absolute;
-  left: 1em;
-  color: #547564;
-}
-
-#email-area {
-  width: 100%;
-  padding-left: 10%;
-  padding-right: 10%;
-  height: 5em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
-  margin-top: 1em;
-  transition: all 0.25s ease;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  width: 50px;
+  height: 20px;
 }
 
-#email-area input {
+.card-side::before {
+  position: absolute;
+  content: 'Log in';
+  left: -70px;
+  top: 0;
+  width: 100px;
+  text-decoration: underline;
+  color: var(--font-color);
+  font-weight: 600;
+}
+
+.card-side::after {
+  position: absolute;
+  content: 'Sign up';
+  left: 70px;
+  top: 0;
+  width: 100px;
+  text-decoration: none;
+  color: var(--font-color);
+  font-weight: 600;
+}
+
+.toggle {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-colorcolor);
+  transition: 0.3s;
+}
+
+.slider:before {
+  box-sizing: border-box;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  border: 2px solid var(--main-color);
+  border-radius: 5px;
+  left: -2px;
+  bottom: 2px;
+  background-color: var(--bg-color);
+  box-shadow: 0 3px 0 var(--main-color);
+  transition: 0.3s;
+}
+
+.toggle:checked + .slider {
+  background-color: var(--input-focus);
+}
+
+.toggle:checked + .slider:before {
+  transform: translateX(30px);
+}
+
+.toggle:checked ~ .card-side:before {
+  text-decoration: none;
+}
+
+.toggle:checked ~ .card-side:after {
+  text-decoration: underline;
+}
+
+/* card */ 
+
+.flip-card__inner {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  background-color: transparent;
+  perspective: 1000px;
+    /* width: 100%;
+    height: 100%; */
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.toggle:checked ~ .flip-card__inner {
+  transform: rotateY(180deg);
+}
+
+.toggle:checked ~ .flip-card__front {
+  box-shadow: none;
+}
+
+.flip-card__front, .flip-card__back {
+  padding: 20px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  background: lightgrey;
+  gap: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
+}
+
+.flip-card__back {
   width: 100%;
-  border: 2px solid #547564;
-  border-radius: 0.5em;
-  height: 2.5em;
-  padding-left: 1em;
-  font-size: 0.95em;
-  font-weight: 100;
-  transition: all 0.5s ease;
+  transform: rotateY(180deg);
+}
+
+.flip-card__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.title {
+  margin: 20px 0 20px 0;
+  font-size: 25px;
+  font-weight: 900;
+  text-align: center;
+  color: var(--main-color);
+}
+
+.flip-card__input {
+  width: 250px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--font-color);
+  padding: 5px 10px;
   outline: none;
-  box-shadow: 0px 5px 5px -3px rgb(0, 0, 0, 0.2);
 }
 
-#password-area {
-  width: 100%;
-  padding-left: 10%;
-  padding-right: 10%;
-  height: 6em;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  flex-direction: column;
-  transition: all 0.25s ease;
+.flip-card__input::placeholder {
+  color: var(--font-color-sub);
+  opacity: 0.8;
 }
 
-#password-area input {
-  width: 100%;
-  border: 2px solid #547564;
-  font-size: 0.95em;
-  border-radius: 0.5em;
-  height: 2.5em;
-  padding-left: 1em;
-  transition: all 0.25s ease;
-  outline: none;
-  box-shadow: 0px 5px 5px -3px rgb(0, 0, 0, 0.2);
+.flip-card__input:focus {
+  border: 2px solid var(--input-focus);
 }
 
-#password-area a {
-  padding-top: 0.5em;
-  font-size: 0.8em;
-  font-weight: bold;
-  transition: all 0.25s ease;
-  color: #547564;
+.flip-card__btn:active, .button-confirm:active {
+  box-shadow: 0px 0px var(--main-color);
+  transform: translate(3px, 3px);
 }
 
-#footer-area {
-  margin-top: 0%;
-  padding-top: 0%;
-  width: 100%;
-  padding-left: 10%;
-  padding-right: 10%;
-  height: 7em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  color: #547564;
-  transition: all 0.25s ease;
-}
-
-#footer-area button {
-  width: 100%;
-  border: 2px solid #547564;
-  border-radius: 0.5em;
-  height: 2.5em;
-  padding-left: 1em;
-  font-size: 0.95em;
-  font-weight: 100;
-  transition: all 0.25s ease;
-  color: white;
-  font-weight: bold;
-  background-color: #547564;
-  box-shadow: 0px 5px 5px -3px rgb(0, 0, 0, 0.2);
-}
-
-#footer-area p,
-#footer-area a {
-  font-size: 0.8em;
-  transition: all 0.25s ease;
-}
-
-#text-inside {
-  padding-top: 0.5em;
-  display: flex;
-}
-
-#link {
-  padding-left: 0.1em;
-  font-weight: bold;
-}
-
-#background-color {
-  width: 100%;
-  height: 3.5em;
-  background-color: #547564;
-  position: absolute;
-  top: 0em;
-  z-index: 1;
-  transition: all 0.5s ease;
-  box-shadow: inset 5px 0px #547564;
-}
-
-#link-circle {
-  width: 100%;
-  height: 4.5em;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding-left: 15%;
-  padding-right: 15%;
-}
-
-#link-circle svg {
-  transition: all 0.25s ease;
-}
-
-
-
-::placeholder {
-  color: #547564;
-  font-weight: bold;
-}
-
-.form:hover {
-  width: 16em;
-  height: 23em;
-}
-
-#email-area:hover ~ #background-color {
-  height: 4.2em;
-  transform: translateY(4em);
-}
-
-#email-area:hover,
-#password-area:hover,
-#footer-area:hover {
-  padding-left: 5%;
-  padding-right: 5%;
-}
-
-#email-area:hover p {
-  color: white;
-}
-
-#email-area:hover input {
-  color: white;
-  border: 2px solid white;
-  background-color: #547564;
-  height: 3em;
-}
-
-#email-area:hover ::placeholder {
-  color: white;
-}
-
-#password-area:hover ~ #background-color {
-  height: 5.5em;
-  transform: translateY(7.8em);
-}
-
-#footer-area:hover ~ #background-color {
-  height: 5.9em;
-  transform: translateY(13.2em);
-}
-
-#password-area:hover p {
-  color: white;
-}
-
-#password-area:hover a {
-  color: white;
-  padding-right: 5%;
-}
-
-#password-area:hover input {
-  color: white;
-  border: 2px solid white;
-  background-color: #547564;
-  height: 3em;
-}
-
-#password-area:hover ::placeholder {
-  color: white;
-}
-
-#footer-area:hover p,
-#footer-area:hover a {
-  color: white;
-}
-
-#footer-area:hover button {
-  border: 2px solid white;
-  background-color: #547564;
-  height: 3em;
-}
-
-#footer-area button:active {
-  color: #547564;
-  background-color: white;
-  width: 90%;
-}
-
-#link-circle svg:hover {
-  transform: scale(1.25);
-  margin: 0.5em;
-}
+.flip-card__btn {
+  margin: 20px 0 20px 0;
+  width: 120px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--font-color);
+  cursor: pointer;
+} 
