@@ -1,47 +1,93 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [FormsModule, CommonModule]
 })
-export class LoginComponent {
-  isLogin: boolean = true;  // Flag to toggle between login and register form
-  firstName: string = '';
-  lastName: string = '';
+export class LoginComponent implements OnInit {
+  isLogin: boolean = true;
+  name: string = '';
   email: string = '';
   password: string = '';
+  role: string = ''; 
+  errorMessage: string = '';
 
-  constructor(private router: Router) {}
+  
 
-  // Method to toggle between login and register forms
+  constructor(private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.role = params['role']; 
+      console.log('Role received:', this.role); 
+    });
+  }
+  
   toggleForm(): void {
     this.isLogin = !this.isLogin;
   }
 
-  // Method to handle form submission (login or register)
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.isLogin) {
-      this.login(); // Login logic
+      await this.login();
     } else {
-      this.register(); // Registration logic
+      await this.register();
     }
   }
 
-  // Method to handle login
-  login(): void {
-    console.log('Logging in with:', this.email, this.password);
-    // Add actual login logic here, e.g., call an AuthService to authenticate
+  async login(): Promise<void> {
+    try {
+      const user = await this.authService.login(this.email, this.password);
+      console.log('User logged in:', user);
+  
+      // Retrieve role from AuthService
+      const role = this.authService.getRole();
+      
+      if (role) {
+        console.log(`Logged in as ${role}`);
+        
+        // Now redirect based on the role
+        this.redirectBasedOnRole(role);  // Pass the role here
+      } else {
+        console.log('Role is undefined. Redirecting to login page.');
+        this.router.navigate(['/login']);
+      }
+    } catch (error: any) {
+      this.errorMessage = error.message;
+      console.error('Login failed:', error.message);
+    }
+  }
+  
+
+  register(): void {
+    this.authService.register(this.email, this.password, this.name, this.role) 
+      .then(() => {
+        console.log('User registered successfully');
+      })
+      .catch((error) => {
+        console.error('Error registering user:', error);
+      });
   }
 
-  // Method to handle registration
-  register(): void {
-    console.log('Registering with:', this.firstName, this.lastName, this.email, this.password);
-    // Add actual registration logic here, e.g., call an AuthService to create the user
+  // Redirect the user based on their role
+  private redirectBasedOnRole(role: string): void {
+    if (role === 'student') {
+      this.router.navigate(['/student']);  // Navigate to student dashboard
+    } else if (role === 'teacher') {
+      console.log("redirecting to teacher")
+      this.router.navigate(['/teacher']);  // Navigate to teacher dashboard
+    } else if (role === 'principal') {
+      this.router.navigate(['/principal']);  // Navigate to principal dashboard
+    } else {
+      // Default redirect (if no valid role found)
+      this.router.navigate(['/auth']);
+    }
   }
 }

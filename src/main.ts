@@ -1,19 +1,30 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-
 import { AppComponent } from './app/app.component';
 import { provideRouter, Routes } from '@angular/router';
 import { HomeComponent } from './app/pages/home/home.component';
 import { LoginComponent } from './app/components/auth/auth.component';
+import { environment } from './app/enviroment';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth'; 
+import { provideFirestore, getFirestore } from '@angular/fire/firestore'; 
+import { StudentComponent } from './app/student/student.component';
+import { TeacherComponent } from './app/teacher/teacher.component';
+import { PrincipalComponent } from './app/principal/principal.component';
+import { AuthGuard } from './app/auth.guard';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent },
+  { path: 'student', component: StudentComponent, canActivate: [AuthGuard], data: { role: 'student' } },
+  { path: 'teacher', component: TeacherComponent},
+  { path: 'principal', component: PrincipalComponent, canActivate: [AuthGuard], data: { role: 'principal' } },
+  { path: 'auth', component: LoginComponent},
   { path: '', component: HomeComponent },
-  { path: 'auth', component: LoginComponent }
 ];
-
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes)
+    provideRouter(routes),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore())
   ],
 });

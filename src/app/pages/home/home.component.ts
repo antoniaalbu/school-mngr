@@ -14,9 +14,12 @@ export class HomeComponent {
     private router: Router
   ) {}
 
-  goToLogin(): void {
-    this.router.navigate(['/auth']);
+  goToLogin(role: string) {
+    this.router.navigate(['/auth'], { queryParams: { role } });
   }
 
+  goToSimpleLogin() {
+    this.router.navigate(['/auth']);
+  }
   
 }
