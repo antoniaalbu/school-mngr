@@ -28,11 +28,11 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
-    // Initialize Firebase with the environment config
+   
     AngularFireModule.initializeApp(environment.firebase);
 
     this.authService.currentUser$.subscribe(user => {
-      this.isAuthenticated = !!user;  // Set true if user exists
+      this.isAuthenticated = !!user;  
     });
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)

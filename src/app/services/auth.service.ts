@@ -5,8 +5,6 @@ import {
   signInWithEmailAndPassword,
   UserCredential,
   User,
-  setPersistence,
-  browserLocalPersistence,
   onAuthStateChanged
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
@@ -26,10 +24,7 @@ export class AuthService {
   public currentUserName$: Observable<string | undefined> = this.currentUserNameSubject.asObservable();
 
   constructor() {
-
-    setPersistence(this.auth, browserLocalPersistence)
-      .then(() => console.log('Auth persistence set to local storage.'))
-      .catch(error => console.error('Error setting auth persistence:', error));
+    // Removed persistence logic
 
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
@@ -41,7 +36,6 @@ export class AuthService {
       }
     });
   }
-
 
   getCurrentUser(): Observable<User | null> {
     return this.currentUser$;
@@ -74,7 +68,6 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<User> {
     try {
-      await setPersistence(this.auth, browserLocalPersistence);
       const userCredential: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
       
@@ -90,14 +83,12 @@ export class AuthService {
     return this.currentUserRole;
   }
 
-
   getName(): Observable<string | undefined> {
     return this.currentUserName$;
   }
 
   private setCurrentUser(user: User) {
     this.currentUserSubject.next(user);
-
 
     this.getUserProfile(user.uid)
       .then(userProfile => {
