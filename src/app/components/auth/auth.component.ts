@@ -45,14 +45,14 @@ export class LoginComponent implements OnInit {
       const user = await this.authService.login(this.email, this.password);
       console.log('User logged in:', user);
   
-      // Retrieve role from AuthService
+      
       const role = this.authService.getRole();
       
       if (role) {
         console.log(`Logged in as ${role}`);
         
-        // Now redirect based on the role
-        this.redirectBasedOnRole(role);  // Pass the role here
+        
+        this.redirectBasedOnRole(role);  
       } else {
         console.log('Role is undefined. Redirecting to login page.');
         this.router.navigate(['/auth']);
@@ -74,17 +74,17 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  // Redirect the user based on their role
+ 
   private redirectBasedOnRole(role: string): void {
     if (role === 'student') {
-      this.router.navigate(['/student']);  // Navigate to student dashboard
+      this.router.navigate(['/student']);  
     } else if (role === 'teacher') {
       console.log("redirecting to teacher")
-      this.router.navigate(['/teacher']);  // Navigate to teacher dashboard
+      this.router.navigate(['/teacher']);  
     } else if (role === 'principal') {
-      this.router.navigate(['/principal']);  // Navigate to principal dashboard
+      this.router.navigate(['/principal']); 
     } else {
-      // Default redirect (if no valid role found)
+   
       this.router.navigate(['/auth']);
     }
   }

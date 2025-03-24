@@ -10,7 +10,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { StudentComponent } from './app/student/student.component';
 import { TeacherComponent } from './app/teacher/teacher.component';
 import { PrincipalComponent } from './app/principal/principal.component';
-
+import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 
@@ -25,11 +25,13 @@ const routes: Routes = [
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideHttpClient(),
     provideRouter(routes),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStore(),
     provideEffects()
-],
+  ]
+  
 });

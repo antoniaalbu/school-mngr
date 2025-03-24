@@ -9,24 +9,20 @@ import { Observable, of } from 'rxjs';
 export class StudentService {
   private firestore: Firestore = inject(Firestore);
 
-  // Get courses assigned to a student (by studentId)
   getCourses(studentId: string): Observable<any[]> {
-    // Reference to the courses collection
     const coursesRef = collection(this.firestore, 'courses');
     
-    // Query to get courses where studentId matches
     const q = query(coursesRef, where('studentId', '==', studentId));
     
-    // Fetch the documents
     return new Observable((observer) => {
       getDocs(q)
         .then((querySnapshot) => {
-          // If no courses are found, return an empty array
+          
           if (querySnapshot.empty) {
-            observer.next([]); // No courses found, emit an empty array
+            observer.next([]); 
           } else {
             const courses = querySnapshot.docs.map(doc => doc.data());
-            observer.next(courses);  // Emit courses data if found
+            observer.next(courses);  
           }
           observer.complete();
         })

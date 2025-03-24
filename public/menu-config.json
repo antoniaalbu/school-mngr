@@ -7,8 +7,6 @@
     "sticky": true
   },
   "menu": [
-    { "name": "Home", "route": "/home", "icon": "fas fa-home", "enabled": true },
-    { "name": "About", "route": "/about", "icon": "fas fa-info-circle", "enabled": true },
-    { "name": "Contact", "route": "/contact", "icon": "fas fa-phone", "enabled": true }
+    { "name": "Home", "route": "/", "icon": "fas fa-home", "enabled": true }
   ]
 }

@@ -1,13 +1,69 @@
-<div class="course-container" *ngIf="courses$ | async as courses; else noCourses">
-  <div *ngIf="courses && courses.length > 0">
-    <ul>
-      <li *ngFor="let course of courses">
-        <span class="course-name">{{ course.name }}</span> - Grade: {{ course.grade }}
-      </li>
-    </ul>
-  </div>
-</div>
+<div class="split-screen">
 
-<ng-template #noCourses>
-  <p class="no-courses">No courses enrolled.</p>
-</ng-template>
+  <div class="background-container">
+  </div>
+
+  <div class="user-profile">
+    <div class="circle-image-container">
+      <div class="circle-image">
+        <img src="avatar.jpg" alt="Profile Picture">
+      </div>
+    </div>
+    <div class="user-info">
+      <div class="user-name">
+        <h2>{{ username }}</h2> 
+      </div>
+      <div class="button-group">
+        <button 
+          (click)="toggleActiveButton('grades')" 
+          [class.active]="activeButton === 'grades'">View My Grades</button>
+        <button 
+          (click)="toggleActiveButton('courses')" 
+          [class.active]="activeButton === 'courses'">Enrolled Courses</button>
+        <button 
+          (click)="toggleActiveButton('teachers')" 
+          [class.active]="activeButton === 'teachers'">View Teachers</button>
+      </div>
+      
+    </div>
+   
+  </div>
+
+  <div class="course-container" *ngIf="courses$ | async as courses; else noCourses">
+
+    <div *ngIf="courses && courses.length > 0">
+      
+      <div *ngIf="activeView === 'grades'">
+       
+        <ul>
+          <li *ngFor="let course of courses">
+            <span class="course-name">{{ course.name }}</span> - Grade: {{ course.grade }}
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="activeView === 'courses'">
+        
+        <ul>
+          <li *ngFor="let course of courses">
+            <span class="course-name">{{ course.name }}</span>
+          </li>
+        </ul>
+      </div>
+
+
+      <div *ngIf="activeView === 'teachers'">
+        
+        <ul>
+          <li *ngFor="let course of courses">
+            <span class="course-name">{{ course.name }}</span> - Teacher: {{ course.teacher }}
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-template #noCourses>
+    <p class="no-courses">No courses enrolled.</p>
+  </ng-template>
+</div>
