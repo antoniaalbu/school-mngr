@@ -1,4 +1,4 @@
-/* Split screen container */
+
 .split-screen {
   display: flex;
   width: 100%;
@@ -7,31 +7,29 @@
   position: relative;
 }
 
-/* Background half */
 .background-container {
   background: url('../../../public/studentApp.jpg') no-repeat center center;
   background-size: cover;
   flex: 1;
   height: 50vh;
   padding: 20px;
-  position: relative; /* Make sure other elements align correctly within this container */
+  position: relative; 
 }
 
-/* User profile positioning */
+
 .user-profile {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  position: absolute; /* This will allow it to sit directly on top of the background */
-  top: 50%; /* Align the profile container in the middle of the background */
+  position: absolute; 
+  top: 50%;
   left: 0;
   right: 0;
-  transform: translateY(-50%); /* Center the user profile container vertically */
-  z-index: 10; /* Make sure it's on top of the background */
+  transform: translateY(-50%); 
+  z-index: 10; 
 }
 
-/* Circle Image styling */
 .circle-image-container {
   width: 220px;
   height: 220px;
@@ -43,14 +41,13 @@
   margin-right: 20px;
 }
 
-/* Circle Image styling to make it cover the container */
+
 .circle-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* User Info Styling */
 .user-info {
   display: flex;
   flex-direction: column;
@@ -59,7 +56,6 @@
   gap: 10px;
 }
 
-/* Position the User's Name at the Top and Center */
 .user-name {
   font-size: 24px;
   font-weight: bold;
@@ -67,7 +63,6 @@
   text-align: left;
 }
 
-/* Course container half */
 .course-container {
   flex: 1;
   padding: 30px;
@@ -83,12 +78,10 @@
   align-items: center;
 }
 
-/* Hover effect for course container */
 .course-container:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-/* Styling for the button group */
 .button-group {
   display: flex;
   gap: 10px;
@@ -97,7 +90,6 @@
   align-items: center;
 }
 
-/* Styling for buttons */
 .button-group button {
   color: rgb(0, 0, 0);
   background-color: white;
@@ -124,7 +116,6 @@
   background: #9be4ff;
 }
 
-/* Styling for lists */
 ul {
   list-style-type: none;
   padding-left: 0;
@@ -159,7 +150,6 @@ li {
   font-size: 17px;
 }
 
-/* Highlight the course name */
 li span.course-name {
   font-weight: 700;
   color: #2c3e50;
@@ -181,7 +171,6 @@ li span.course-description {
   font-style: italic;
 }
 
-/* Styling for responsiveness */
 @media (max-width: 768px) {
   .split-screen {
     flex-direction: column;

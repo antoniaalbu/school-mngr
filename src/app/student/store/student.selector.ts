@@ -6,9 +6,7 @@ export const selectStudentState = createFeatureSelector<StudentState>('student')
 export const selectCourses = createSelector(
     selectStudentState,
     (studentState: StudentState | undefined) => {
-      // Use optional chaining to safely access studentState?.courses
-      // If studentState is undefined, return an empty array
-      const courses = studentState?.courses || []; // Default to empty array
+      const courses = studentState?.courses || [];
       return courses;
     }
 );
@@ -16,8 +14,7 @@ export const selectCourses = createSelector(
 export const selectLoading = createSelector(
     selectStudentState,
     (studentState: StudentState | undefined) => {
-      // If studentState is undefined, return false
-      const loading = studentState?.loading || false; // Default to false
+      const loading = studentState?.loading || false; 
       return loading;
     }
 );
@@ -25,8 +22,7 @@ export const selectLoading = createSelector(
 export const selectError = createSelector(
   selectStudentState,
   (studentState: StudentState | undefined) => {
-    // If studentState is undefined, return an empty string
-    const error = studentState?.error || ''; // Default to empty string
+    const error = studentState?.error || ''; 
     return error;
   }
 );

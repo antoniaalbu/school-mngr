@@ -19,19 +19,18 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class AuthService {
   private currentUserRole: string | undefined;
   private currentUserNameSubject: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined); // Use BehaviorSubject for name
-  private auth: Auth = inject(Auth);  // Inject Firebase Auth
-  private firestore: Firestore = inject(Firestore);  // Inject Firestore
+  private auth: Auth = inject(Auth);  
+  private firestore: Firestore = inject(Firestore); 
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
-  public currentUserName$: Observable<string | undefined> = this.currentUserNameSubject.asObservable(); // Observable for username
+  public currentUserName$: Observable<string | undefined> = this.currentUserNameSubject.asObservable();
 
   constructor() {
-    // Set Firebase Auth persistence
+
     setPersistence(this.auth, browserLocalPersistence)
       .then(() => console.log('Auth persistence set to local storage.'))
       .catch(error => console.error('Error setting auth persistence:', error));
 
-    // Listen for authentication state changes to persist user after refresh
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
         console.log('User found on refresh:', user);
@@ -43,7 +42,7 @@ export class AuthService {
     });
   }
 
-  // Return an observable that components can subscribe to
+
   getCurrentUser(): Observable<User | null> {
     return this.currentUser$;
   }
@@ -58,7 +57,6 @@ export class AuthService {
       console.log('User registered successfully:', user);
       console.log('Storing user details in Firestore with role:', role);
 
-      // Store the user details in Firestore
       await setDoc(doc(this.firestore, 'users', user.uid), {
         uid: user.uid,
         name: name,
@@ -67,7 +65,7 @@ export class AuthService {
         createdAt: new Date(),
       });
 
-      this.setCurrentUser(user);  // Set the registered user in BehaviorSubject
+      this.setCurrentUser(user);
     } catch (error) {
       console.error('Error during registration:', error);
       throw error;
@@ -76,7 +74,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<User> {
     try {
-      await setPersistence(this.auth, browserLocalPersistence);  // Ensure persistence before login
+      await setPersistence(this.auth, browserLocalPersistence);
       const userCredential: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
       
@@ -92,7 +90,7 @@ export class AuthService {
     return this.currentUserRole;
   }
 
-  // Get the username from the BehaviorSubject
+
   getName(): Observable<string | undefined> {
     return this.currentUserName$;
   }
@@ -100,11 +98,11 @@ export class AuthService {
   private setCurrentUser(user: User) {
     this.currentUserSubject.next(user);
 
-    // Fetch user profile from Firestore and store relevant information
+
     this.getUserProfile(user.uid)
       .then(userProfile => {
         this.currentUserRole = userProfile.role;
-        this.currentUserNameSubject.next(userProfile.name);  // Update the BehaviorSubject with the username
+        this.currentUserNameSubject.next(userProfile.name); 
         console.log('User profile set:', { name: userProfile.name, role: this.currentUserRole });
       })
       .catch(error => console.error('Error fetching user profile:', error));

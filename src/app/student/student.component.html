@@ -1,7 +1,6 @@
 <div class="split-screen">
-  <!-- Background Half -->
+
   <div class="background-container">
-    <!-- The background content goes here -->
   </div>
 
   <div class="user-profile">
@@ -12,7 +11,7 @@
     </div>
     <div class="user-info">
       <div class="user-name">
-        <h2>{{ username }}</h2> <!-- Display authenticated user's name here -->
+        <h2>{{ username }}</h2> 
       </div>
       <div class="button-group">
         <button 
@@ -30,13 +29,10 @@
    
   </div>
 
-  <!-- Content Half (Button container) -->
   <div class="course-container" *ngIf="courses$ | async as courses; else noCourses">
-    <!-- Buttons to toggle views -->
+
     <div *ngIf="courses && courses.length > 0">
       
-
-      <!-- Grades List -->
       <div *ngIf="activeView === 'grades'">
        
         <ul>
@@ -45,8 +41,6 @@
           </li>
         </ul>
       </div>
-
-      <!-- Enrolled Courses -->
       <div *ngIf="activeView === 'courses'">
         
         <ul>
@@ -56,7 +50,7 @@
         </ul>
       </div>
 
-      <!-- View Teachers -->
+
       <div *ngIf="activeView === 'teachers'">
         
         <ul>
