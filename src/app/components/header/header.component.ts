@@ -1,11 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ConfigService, Config, MenuItem } from '../../services/config.service';
+import { Component, OnInit } from '@angular/core';
+import { ConfigService, MenuItem } from '../../services/config.service';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-
-import { Subscription } from 'rxjs';
-
 
 @Component({
   selector: 'app-header',
@@ -14,24 +10,19 @@ import { Subscription } from 'rxjs';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   menu: MenuItem[] = [];
   sticky = false;
   menuOpen = false;
 
-  constructor(
-   
-    private router: Router,
-   
-  ) { }
+  constructor(private configService: ConfigService) {}
 
-
-  goToLogin(): void {
-    this.router.navigate(['/auth']);
-    this.closeMenu();
+  ngOnInit(): void {
+    this.configService.getConfig().subscribe(config => {
+      this.menu = config.menu.filter(item => item.enabled);  // Ensure only enabled items are shown
+      this.sticky = config.header.sticky; // Apply header config
+    });
   }
-
-  
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;

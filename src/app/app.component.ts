@@ -10,6 +10,7 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { Auth } from '@angular/fire/auth';
 import { inject } from '@angular/core';
 import { environment } from './enviroment';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -20,17 +21,19 @@ import { environment } from './enviroment';
 })
 export class AppComponent implements OnInit {
   isHomePage: boolean = false;
+  isAuthenticated = false;  
 
-  // Inject Firebase Auth
   private auth: Auth = inject(Auth);
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
     // Initialize Firebase with the environment config
     AngularFireModule.initializeApp(environment.firebase);
 
-    // Listen to router events and set `isHomePage` when the current route is the home page
+    this.authService.currentUser$.subscribe(user => {
+      this.isAuthenticated = !!user;  // Set true if user exists
+    });
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {

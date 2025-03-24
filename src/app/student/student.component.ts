@@ -16,14 +16,24 @@ export class StudentComponent implements OnInit {
   loading = true;  // A flag to show loading state
   error: string | null = null;  // To hold any error message
   hasCourses = false;  // To track whether the user has courses
+  activeView: string | null = null;
+  username: string | undefined;  // Property to hold the user's name
+  activeButton: string = '';
 
   constructor(private studentService: StudentService, private authService: AuthService) {}
 
   ngOnInit(): void {
+    // Subscribe to the username observable from AuthService
+    this.authService.currentUserName$.subscribe(name => {
+      this.username = name;
+      console.log('Username:', this.username); // Log the username
+    });
+
     this.authService.currentUser$.subscribe({
       next: (currentUser) => {
         if (currentUser) {
           console.log('Current User ID:', currentUser.uid);  // Log the uid
+          
           // Assign the observable from the service to the courses$ property if user is logged in
           this.courses$ = this.studentService.getCourses(currentUser.uid); // Pass the user id to fetch courses
           
@@ -59,5 +69,13 @@ export class StudentComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  toggleActiveButton(button: string) {
+    // Set the active button
+    this.activeButton = button;
+
+    // Also set the active view based on the button clicked
+    this.activeView = button;  // This will control which content to show
   }
 }
