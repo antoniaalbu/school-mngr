@@ -1,16 +1,11 @@
 import { Injectable } from '@angular/core';
-import {
-  Auth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  UserCredential,
-  User,
-  onAuthStateChanged
-} from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, UserCredential, User, onAuthStateChanged } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { signOut } from '@angular/fire/auth';
+import { Store } from '@ngrx/store';  // Import Store
+import { setTeacher } from '../teacher/store/teacher.actions';  // Import action to update teacher state
 
 @Injectable({
   providedIn: 'root',
@@ -24,9 +19,7 @@ export class AuthService {
   public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
   public currentUserName$: Observable<string | undefined> = this.currentUserNameSubject.asObservable();
 
-  constructor() {
-   
-
+  constructor(private store: Store) {  // Inject Store here
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
         console.log('User found on refresh:', user);
@@ -46,12 +39,14 @@ export class AuthService {
     try {
       console.log('Attempting to register user with email:', email);
 
+      // Register user
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
 
       console.log('User registered successfully:', user);
       console.log('Storing user details in Firestore with role:', role);
 
+      // Store user in Firestore's 'users' collection
       await setDoc(doc(this.firestore, 'users', user.uid), {
         uid: user.uid,
         name: name,
@@ -60,6 +55,25 @@ export class AuthService {
         createdAt: new Date(),
       });
 
+      // If the role is 'teacher', also add to 'teachers' collection
+      if (role === 'teacher') {
+        await setDoc(doc(this.firestore, 'teachers', user.uid), {
+          uid: user.uid,
+          name: name,
+          email: email,
+          role: role,
+          createdAt: new Date(),
+        });
+
+        console.log('Teacher added to teachers collection:', user.uid);
+
+        // Dispatch an action to update the TeacherState in the store
+        this.store.dispatch(setTeacher({
+          teacher: { id: user.uid, name: name },
+        }));
+      }
+
+      // Set the current user
       this.setCurrentUser(user);
     } catch (error) {
       console.error('Error during registration:', error);
@@ -71,7 +85,6 @@ export class AuthService {
     try {
       const userCredential: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
-      
       this.setCurrentUser(user);
       return user;
     } catch (error) {
@@ -106,7 +119,7 @@ export class AuthService {
     this.getUserProfile(user.uid)
       .then(userProfile => {
         this.currentUserRole = userProfile.role;
-        this.currentUserNameSubject.next(userProfile.name); 
+        this.currentUserNameSubject.next(userProfile.name);
         console.log('User profile set:', { name: userProfile.name, role: this.currentUserRole });
       })
       .catch(error => console.error('Error fetching user profile:', error));

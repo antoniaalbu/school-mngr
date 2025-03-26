@@ -13,6 +13,8 @@ import { PrincipalComponent } from './app/principal/principal.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { studentReducer } from './app/student/reducer/student.reducer';
+import { teacherReducer } from './app/teacher/store/teacher.reducer';
+import { FirestoreSeeder } from './app/utils/firestore-seeder';
 
 const routes: Routes = [
   { path: 'student', component: StudentComponent },
@@ -28,7 +30,17 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStore({ student: studentReducer }) // ✅ Registering studentReducer
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      
+      
+      if (!environment.production) {
+        FirestoreSeeder.seedData(firestore)
+          .catch(error => console.error('Seeding failed', error));
+      }
+      
+      return firestore;
+    }),
+    provideStore({ student: studentReducer , teacher: teacherReducer}) 
   ]
 }).catch(err => console.error(err));
