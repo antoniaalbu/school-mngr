@@ -24,46 +24,51 @@
           (click)="toggleActiveButton('teachers')" 
           [class.active]="activeButton === 'teachers'">View Teachers</button>
       </div>
-      
     </div>
    
   </div>
 
-  <div class="course-container" *ngIf="courses$ | async as courses; else noCourses">
-
-    <div *ngIf="courses && courses.length > 0">
-      
-      <div *ngIf="activeView === 'grades'">
-       
-        <ul>
-          <li *ngFor="let course of courses">
-            <span class="course-name">{{ course.name }}</span> - Grade: {{ course.grade }}
-          </li>
-        </ul>
-      </div>
-      <div *ngIf="activeView === 'courses'">
-        
-        <ul>
-          <li *ngFor="let course of courses">
-            <span class="course-name">{{ course.name }}</span>
-          </li>
-        </ul>
-      </div>
-
-
-      <div *ngIf="activeView === 'teachers'">
-        
-        <ul>
-          <li *ngFor="let course of courses">
-            <span class="course-name">{{ course.name }}</span> - Teacher: {{ course.teacher }}
-          </li>
-        </ul>
-      </div>
-
-    </div>
+  <div *ngIf="loading$ | async; else coursesList">
+    <p>Loading...</p>
   </div>
 
-  <ng-template #noCourses>
-    <p class="no-courses">No courses enrolled.</p>
+  <ng-template #coursesList>
+    <div class="course-container" *ngIf="courses$ | async as courses; else noCourses">
+
+      <div *ngIf="courses && courses.length > 0">
+        
+        <div *ngIf="activeView === 'grades'">
+          <ul>
+            <li *ngFor="let course of courses">
+              <span class="course-name">{{ course.name }}</span> - Grade: {{ course.grade }}
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="activeView === 'courses'">
+          <ul>
+            <li *ngFor="let course of courses">
+              <span class="course-name">{{ course.name }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div *ngIf="activeView === 'teachers'">
+          <ul>
+            <li *ngFor="let course of courses">
+              <span class="course-name">{{ course.name }}</span> - Teacher: {{ course.teacher }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noCourses>
+      <p class="no-courses">No courses enrolled.</p>
+    </ng-template>
   </ng-template>
+
+  <ng-template #errorMessage>
+    <p *ngIf="error$ | async" class="error-message">{{ error$ | async }}</p>
+  </ng-template>
+
 </div>

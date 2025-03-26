@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ConfigService, MenuItem } from '../../services/config.service';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -15,12 +17,12 @@ export class HeaderComponent implements OnInit {
   sticky = false;
   menuOpen = false;
 
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.configService.getConfig().subscribe(config => {
-      this.menu = config.menu.filter(item => item.enabled);  // Ensure only enabled items are shown
-      this.sticky = config.header.sticky; // Apply header config
+      this.menu = config.menu.filter(item => item.enabled);  
+      this.sticky = config.header.sticky; 
     });
   }
 
@@ -30,5 +32,11 @@ export class HeaderComponent implements OnInit {
 
   closeMenu(): void {
     this.menuOpen = false;
+  }
+
+  onLogout() {
+    this.authService.logout().then(() => {
+      this.router.navigate(['/auth']); 
+    });
   }
 }

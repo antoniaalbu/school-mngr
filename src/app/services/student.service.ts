@@ -11,25 +11,21 @@ export class StudentService {
 
   getCourses(studentId: string): Observable<any[]> {
     const coursesRef = collection(this.firestore, 'courses');
-    
     const q = query(coursesRef, where('studentId', '==', studentId));
-    
+  
     return new Observable((observer) => {
-      getDocs(q)
-        .then((querySnapshot) => {
-          
-          if (querySnapshot.empty) {
-            observer.next([]); 
-          } else {
-            const courses = querySnapshot.docs.map(doc => doc.data());
-            observer.next(courses);  
-          }
-          observer.complete();
-        })
-        .catch((error) => {
-          console.error('Error getting courses:', error);
-          observer.error(error);
-        });
+      getDocs(q).then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          observer.next([]);  // Return an empty array if no courses found
+        } else {
+          const courses = querySnapshot.docs.map(doc => doc.data());
+          observer.next(courses);  // Emit the courses array
+        }
+        observer.complete();
+      }).catch((error) => {
+        observer.error(error);  // Handle errors
+      });
     });
   }
+  
 }

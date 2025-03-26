@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
-import { HeaderComponent } from "./components/header/header.component";
-import { FooterComponent } from "./components/footer/footer.component";
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { CommonModule } from '@angular/common';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
@@ -21,18 +21,17 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent implements OnInit {
   isHomePage: boolean = false;
-  isAuthenticated = false;  
+  isAuthenticated = false;
 
   private auth: Auth = inject(Auth);
 
   constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
-   
     AngularFireModule.initializeApp(environment.firebase);
 
     this.authService.currentUser$.subscribe(user => {
-      this.isAuthenticated = !!user;  
+      this.isAuthenticated = !!user;
     });
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
