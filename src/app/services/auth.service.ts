@@ -10,13 +10,14 @@ import {
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { signOut } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private currentUserRole: string | undefined;
-  private currentUserNameSubject: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined); // Use BehaviorSubject for name
+  private currentUserNameSubject: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
   private auth: Auth = inject(Auth);  
   private firestore: Firestore = inject(Firestore); 
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
@@ -24,7 +25,7 @@ export class AuthService {
   public currentUserName$: Observable<string | undefined> = this.currentUserNameSubject.asObservable();
 
   constructor() {
-    // Removed persistence logic
+   
 
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
@@ -75,6 +76,18 @@ export class AuthService {
       return user;
     } catch (error) {
       console.error('Login failed:', error);
+      throw error;
+    }
+  }
+
+  async logout(): Promise<void> {
+    try {
+      await signOut(this.auth); 
+      this.currentUserSubject.next(null); 
+      this.currentUserNameSubject.next(undefined); 
+      console.log('User logged out successfully');
+    } catch (error) {
+      console.error('Error during logout:', error);
       throw error;
     }
   }

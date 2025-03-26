@@ -4,13 +4,12 @@ import { StudentState } from '../models/student.state';
 export const selectStudentState = createFeatureSelector<StudentState>('student');
 
 export const selectCourses = createSelector(
-    selectStudentState,
-    (studentState: StudentState | undefined) => {
-      const courses = studentState?.courses || [];
-      return courses;
-    }
+  selectStudentState,
+  (state) => {
+    console.log('State inside selector:', state);  
+    return state.courses;
+  }
 );
-
 export const selectLoading = createSelector(
     selectStudentState,
     (studentState: StudentState | undefined) => {

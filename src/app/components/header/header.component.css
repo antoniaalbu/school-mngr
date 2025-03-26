@@ -13,8 +13,10 @@
     margin: 0 auto;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
     z-index: 1000;
-    
+   
 }
+
+
 
 .nav-container {
     display: flex;

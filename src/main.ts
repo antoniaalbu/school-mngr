@@ -12,8 +12,7 @@ import { TeacherComponent } from './app/teacher/teacher.component';
 import { PrincipalComponent } from './app/principal/principal.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects';
-
+import { studentReducer } from './app/student/reducer/student.reducer';
 
 const routes: Routes = [
   { path: 'student', component: StudentComponent },
@@ -30,8 +29,6 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideStore(),
-    provideEffects()
+    provideStore({ student: studentReducer }) // ✅ Registering studentReducer
   ]
-  
-});
+}).catch(err => console.error(err));
