@@ -6,6 +6,7 @@ export const environment = {
     storageBucket: "school-mngr-ef166.firebasestorage.app",
     messagingSenderId: "930490464774",
     appId: "1:930490464774:web:f3923b0c95276ea597e187"
-    }
+    },
+    production: false
   };
   

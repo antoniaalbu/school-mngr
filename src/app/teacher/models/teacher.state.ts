@@ -1,0 +1,23 @@
+
+export interface Student {
+    id: string;
+    name: string;
+    email: string;
+    grades: Record<string, number>; 
+    teacherId: string; 
+  }
+  
+  export interface Course {
+    id: string;
+    name: string;
+    teacherId: string;
+  }
+  
+  export interface TeacherState {
+    teacher: { id: string, name: string } | null; 
+    students: Student[];  
+    courses: Course[];    
+    loading: boolean;     
+    error: string | null; 
+  }
+  
