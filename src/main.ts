@@ -15,6 +15,8 @@ import { provideStore } from '@ngrx/store';
 import { studentReducer } from './app/student/reducer/student.reducer';
 import { teacherReducer } from './app/teacher/store/teacher.reducer';
 import { FirestoreSeeder } from './app/utils/firestore-seeder';
+import { provideEffects } from '@ngrx/effects';
+import { TeacherEffects } from './app/teacher/store/teacher.effects';
 
 const routes: Routes = [
   { path: 'student', component: StudentComponent },
@@ -41,6 +43,7 @@ bootstrapApplication(AppComponent, {
       
       return firestore;
     }),
-    provideStore({ student: studentReducer , teacher: teacherReducer}) 
+    provideStore({ student: studentReducer , teacher: teacherReducer}),
+    provideEffects([TeacherEffects])
   ]
 }).catch(err => console.error(err));

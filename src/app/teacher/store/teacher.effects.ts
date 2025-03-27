@@ -42,28 +42,25 @@ export class TeacherEffects {
   addCourse$ = createEffect(() =>
     this.actions$.pipe(
       ofType(addCourse),
-      mergeMap((action) =>
-        from(this.teacherService.addCourse(action.course)) // Convert Promise to Observable using 'from'
-          .pipe(
-            map((docRef) => {
-              // Log the DocumentReference to track it
-              console.log('Course successfully added with DocumentReference:', docRef);
+      mergeMap((action) => {
+        console.log('📢 Effect received addCourse action:', action); // Debug log
+        
+        return this.teacherService.addCourse(action.course).pipe(
+          map((docRef) => {
+            console.log('✅ Firestore added course with ID:', docRef.id);
+            const addedCourse: Course = { ...action.course, id: docRef.id };
 
-              // Get the course ID from Firestore
-              const addedCourse: Course = {
-                ...action.course, // Spread the course fields
-                id: docRef.id // Add the Firestore document ID
-              };
-
-              console.log('Course object with ID:', addedCourse); // Log the full course object
-              return addCourseSuccess({ course: addedCourse }); // Dispatch success action with the full course object
-            }),
-            catchError((error) => {
-              console.error('Error adding course:', error); // Log the error
-              return of(addCourseFailure({ error: error.message }));
-            })
-          )
-      )
+            console.log('🚀 Dispatching addCourseSuccess with:', addedCourse);
+            return addCourseSuccess({ course: addedCourse });
+          }),
+          catchError((error) => {
+            console.error('❌ Error adding course:', error);
+            return from([addCourseFailure({ error: error.message })]);
+          })
+        );
+      })
     )
   );
+  
+  
 }
