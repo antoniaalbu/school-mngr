@@ -39,14 +39,14 @@ export class AuthService {
   async register(email: string, password: string, name: string, role: string): Promise<void> {
     try {
       console.log('Attempting to register user with email:', email);
-
+  
       // Register user
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
-
+  
       console.log('User registered successfully:', user);
       console.log('Storing user details in Firestore with role:', role);
-
+  
       // Store user in Firestore's 'users' collection
       await setDoc(doc(this.firestore, 'users', user.uid), {
         uid: user.uid,
@@ -55,7 +55,7 @@ export class AuthService {
         role: role,
         createdAt: new Date(),
       });
-
+  
       // If the role is 'teacher', also add to 'teachers' collection
       if (role === 'teacher') {
         await setDoc(doc(this.firestore, 'teachers', user.uid), {
@@ -65,15 +65,34 @@ export class AuthService {
           role: role,
           createdAt: new Date(),
         });
-
+  
         console.log('Teacher added to teachers collection:', user.uid);
-
+  
         // Dispatch an action to update the TeacherState in the store
         this.store.dispatch(setTeacher({
           teacher: { id: user.uid, name: name },
         }));
       }
-
+  
+      // If the role is 'student', also add to 'students' collection
+      if (role === 'student') {
+        await setDoc(doc(this.firestore, 'students', user.uid), {
+          uid: user.uid,
+          name: name,
+          email: email,
+          teacherId: 'NJjJ9qZyZKeiP3a4IuI9kdlkUr12', // Initially, you can leave teacherId empty or null
+          grades: {
+            // Initialize with course IDs and their corresponding grades
+            'course1': 85, // Grade for course with ID 'course1'
+            'course2': 90, // Grade for course with ID 'course2'
+            'course3': 78, // Grade for course with ID 'course3'
+          },
+          createdAt: new Date(),
+        });
+  
+        console.log('Student added to students collection:', user.uid);
+      }
+  
       // Set the current user
       this.setCurrentUser(user);
     } catch (error) {
@@ -81,6 +100,7 @@ export class AuthService {
       throw error;
     }
   }
+  
 
   async login(email: string, password: string): Promise<User> {
     try {

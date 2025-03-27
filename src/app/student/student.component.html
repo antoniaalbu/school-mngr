@@ -1,7 +1,5 @@
 <div class="split-screen">
-
-  <div class="background-container">
-  </div>
+  <div class="background-container"></div>
 
   <div class="user-profile">
     <div class="circle-image-container">
@@ -11,7 +9,7 @@
     </div>
     <div class="user-info">
       <div class="user-name">
-        <h2>{{ username }}</h2> 
+        <h2>{{ username }}</h2>
       </div>
       <div class="button-group">
         <button 
@@ -25,7 +23,6 @@
           [class.active]="activeButton === 'teachers'">View Teachers</button>
       </div>
     </div>
-   
   </div>
 
   <div *ngIf="loading$ | async; else coursesList">
@@ -34,20 +31,21 @@
 
   <ng-template #coursesList>
     <div class="course-container" *ngIf="courses$ | async as courses; else noCourses">
-
       <div *ngIf="courses && courses.length > 0">
         
         <div *ngIf="activeView === 'grades'">
           <ul>
             <li *ngFor="let course of courses">
-              <span class="course-name">{{ course.name }}</span> - Grade: {{ course.grade }}
+              <span class="course-name">{{ course.courseName }}</span> - Grade: 
+              {{ course.grade || 'N/A' }}
             </li>
           </ul>
         </div>
+
         <div *ngIf="activeView === 'courses'">
           <ul>
             <li *ngFor="let course of courses">
-              <span class="course-name">{{ course.name }}</span>
+              <span class="course-name">{{ course.courseName }}</span>
             </li>
           </ul>
         </div>
@@ -55,7 +53,8 @@
         <div *ngIf="activeView === 'teachers'">
           <ul>
             <li *ngFor="let course of courses">
-              <span class="course-name">{{ course.name }}</span> - Teacher: {{ course.teacher }}
+              <span class="course-name">{{ course.courseName }}</span> - Teacher: 
+              {{ course.teacher || 'Unknown' }}
             </li>
           </ul>
         </div>
@@ -70,5 +69,4 @@
   <ng-template #errorMessage>
     <p *ngIf="error$ | async" class="error-message">{{ error$ | async }}</p>
   </ng-template>
-
 </div>
