@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { signOut } from '@angular/fire/auth';
 import { Store } from '@ngrx/store';  // Import Store
 import { setTeacher } from '../teacher/store/teacher.actions';  // Import action to update teacher state
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -111,6 +112,13 @@ export class AuthService {
 
   getName(): Observable<string | undefined> {
     return this.currentUserName$;
+  }
+
+  // Expose a getter for current user's UID
+  get currentUserUid$(): Observable<string | null> {
+    return this.currentUser$.pipe(
+      map(user => user ? user.uid : null)
+    );
   }
 
   private setCurrentUser(user: User) {

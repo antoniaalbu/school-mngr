@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { loadStudents, loadCourses, assignGrade, addCourse } from './store/teacher.actions';
+import { loadStudents, loadCourses, addCourse, assignGrade } from './store/teacher.actions';
 import { selectStudents, selectCourses, selectLoading, selectError, selectTeacher } from './store/teacher.selectors';
 import { CommonModule } from '@angular/common';
 import { Student, Course } from './models/teacher.state';
@@ -46,45 +46,32 @@ export class TeacherComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Fetch the authenticated teacher's ID
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.teacherId = user.uid; // Use uid as the teacher's ID
+    // Subscribe to the authenticated user's ID
+    this.authService.currentUserUid$.subscribe(userId => {
+      if (userId) {
+        this.teacherId = userId; // Assign the teacherId from authenticated user
+        this.loadData(); // Call method to load data once we have the teacher's ID
       }
-    });
-
-    // Load all students and courses
-    this.store.dispatch(loadStudents({ userId: '' })); // Fetch all students
-    this.store.dispatch(loadCourses({ userId: '' })); // Fetch all courses
-
-    this.students$.subscribe(students => {
-      console.log('All students:', students);
-    });
-
-    this.courses$.subscribe(courses => {
-      console.log('All courses:', courses);
     });
   }
 
-  // Define the onSubmit method
+  loadData() {
+    if (this.teacherId) {
+      // Dispatch actions with the correct teacherId
+      this.store.dispatch(loadStudents({ userId: this.teacherId }));
+      this.store.dispatch(loadCourses({ userId: this.teacherId }));
+    }
+  }
+
   onSubmit() {
     if (this.teacherId) {
-      // Ensure the course has the teacher's ID
       this.newCourse.teacherId = this.teacherId;
-      
-      // Log before dispatching the action
-      console.log('Dispatching addCourse action with course:', this.newCourse);
-      
-      // Dispatch action to add the course
       this.store.dispatch(addCourse({ course: this.newCourse }));
-  
-      // Reset form fields after submission
       this.newCourse = { id: '', name: '', teacherId: '' };
     } else {
       console.log('Teacher is not authenticated.');
     }
   }
-  
 
   gradeStudent(studentId: string | null, courseId: string | null, grade: number | null) {
     if (studentId && courseId && grade != null) {

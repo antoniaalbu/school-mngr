@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Actions, ofType } from '@ngrx/effects';
+import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, map, switchMap, mergeMap } from 'rxjs/operators';
 import { TeacherService } from '../services/teacher.service';
-import { loadStudents, loadStudentsSuccess, loadStudentsFailure, loadCourses, loadCoursesSuccess, loadCoursesFailure, addCourse, addCourseSuccess, addCourseFailure } from './teacher.actions';
-import { createEffect } from '@ngrx/effects'; // Import createEffect
-import { from } from 'rxjs'; // Import from to convert Promise to Observable
-import { Course } from '../models/teacher.state';
+import {
+  loadStudents, loadStudentsSuccess, loadStudentsFailure,
+  loadCourses, loadCoursesSuccess, loadCoursesFailure,
+  addCourse, addCourseSuccess, addCourseFailure
+} from './teacher.actions';
+import { Course, Student } from '../models/teacher.state';
+import { from } from 'rxjs';
 
 @Injectable()
 export class TeacherEffects {
@@ -14,26 +17,32 @@ export class TeacherEffects {
     private actions$: Actions,
     private teacherService: TeacherService
   ) {}
-
   loadStudents$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadStudents),
-      mergeMap(action =>
-        from(this.teacherService.getStudents(action.userId)).pipe(
+      mergeMap(action => {
+        console.log('Load Students action received', action);
+        return from(this.teacherService.getStudents(action.userId)).pipe(
           map(students => loadStudentsSuccess({ students })),
-          catchError(error => of(loadStudentsFailure({ error: error.message })))
-        )
-      )
+          catchError(error => {
+            console.error('❌ Error loading students:', error);
+            return of(loadStudentsFailure({ error: error.message }));
+          })
+        );
+      })
     )
   );
-
+  
   loadCourses$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadCourses),
-      mergeMap(action =>
-        from(this.teacherService.getCourses(action.userId)).pipe(
-          map(courses => loadCoursesSuccess({ courses })),
-          catchError(error => of(loadCoursesFailure({ error: error.message })))
+      switchMap(action =>
+        this.teacherService.getCourses(action.userId).pipe(
+          map((courses: Course[]) => loadCoursesSuccess({ courses })),
+          catchError(error => {
+            console.error('❌ Error loading courses:', error);
+            return of(loadCoursesFailure({ error: error.message }));
+          })
         )
       )
     )
@@ -43,8 +52,8 @@ export class TeacherEffects {
     this.actions$.pipe(
       ofType(addCourse),
       mergeMap((action) => {
-        console.log('📢 Effect received addCourse action:', action); // Debug log
-        
+        console.log('📢 Effect received addCourse action:', action);
+
         return this.teacherService.addCourse(action.course).pipe(
           map((docRef) => {
             console.log('✅ Firestore added course with ID:', docRef.id);
@@ -55,12 +64,10 @@ export class TeacherEffects {
           }),
           catchError((error) => {
             console.error('❌ Error adding course:', error);
-            return from([addCourseFailure({ error: error.message })]);
+            return of(addCourseFailure({ error: error.message }));
           })
         );
       })
     )
   );
-  
-  
 }

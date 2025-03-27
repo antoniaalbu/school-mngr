@@ -44,6 +44,6 @@ bootstrapApplication(AppComponent, {
       return firestore;
     }),
     provideStore({ student: studentReducer , teacher: teacherReducer}),
-    provideEffects([TeacherEffects])
+    
   ]
 }).catch(err => console.error(err));
