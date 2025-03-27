@@ -1,42 +1,9 @@
 <div class="container">
-    <div class="teacher-container">
-      <h1>Teacher Dashboard</h1>
-  
-      <!-- Form for adding a new course -->
-      <div>
-        <h3>Add New Course</h3>
-        <form (ngSubmit)="onSubmit()">
-          <label for="courseName">Course Name:</label>
-          <input type="text" id="courseName" [(ngModel)]="newCourse.name" name="courseName" required />
-  
-          <button type="submit" [disabled]="!newCourse.name">Add Course</button>
-        </form>
-      </div>
-  
-      <!-- Display all students -->
-      <ng-container *ngIf="loading$ | async">
-        <p>Loading students...</p>
-      </ng-container>
-  
-      <ng-container *ngIf="(students$ | async) as students">
-        <strong>List of students:</strong>
-        <ul>
-          <li *ngFor="let student of students">{{ student.name }}</li>
-        </ul>
-      </ng-container>
-  
-      <!-- Display all courses -->
-      <ng-container *ngIf="(courses$ | async) as courses">
-        <strong>List of courses:</strong>
-        <ul>
-          <li *ngFor="let course of courses">{{ course.name }}</li>
-        </ul>
-      </ng-container>
-  
-      <!-- Display error if any -->
-      <ng-container *ngIf="(error$ | async) as error">
-        <strong>Error: </strong>{{ error }}
-      </ng-container>
-    </div>
-  </div>
-  
+<div class="students-list">
+  <h3>Students Assigned to You:</h3>
+  <ul>
+    <li *ngFor="let student of students$ | async">
+      <span>{{ student.name }}</span>
+    </li>
+  </ul>
+</div>
