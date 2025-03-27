@@ -45,23 +45,25 @@ export class LoginComponent implements OnInit {
       const user = await this.authService.login(this.email, this.password);
       console.log('User logged in:', user);
   
-      
-      const role = this.authService.getRole();
-      
-      if (role) {
-        console.log(`Logged in as ${role}`);
-        
-        
-        this.redirectBasedOnRole(role);  
-      } else {
-        console.log('Role is undefined. Redirecting to login page.');
-        this.router.navigate(['/auth']);
+      if (user) {
+        // Fetch role from Firestore
+        const userProfile = await this.authService.getUserProfile(user.uid);
+        const role = userProfile?.role;
+  
+        if (role) {
+          console.log(`Logged in as ${role}`);
+          this.redirectBasedOnRole(role);  
+        } else {
+          console.log('Role not found in Firestore. Redirecting to login page.');
+          this.router.navigate(['/auth']);
+        }
       }
     } catch (error: any) {
       this.errorMessage = error.message;
       console.error('Login failed:', error.message);
     }
   }
+  
   
 
   register(): void {
@@ -85,7 +87,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/principal']); 
     } else {
    
-      this.router.navigate(['/auth']);
+      this.router.navigate(['/']);
     }
   }
 }
