@@ -5,19 +5,18 @@ import { loadStudentCourses, loadStudentCoursesSuccess, loadStudentCoursesFailur
 import { selectCourses, selectLoading, selectError } from './store/student.selector';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { StudentService } from '../services/student.service';  // Import the service to get courses
-
+import { StudentService } from '../services/student.service'; 
 @Component({
   selector: 'app-student',
   templateUrl: './student.component.html',
   styleUrls: ['./student.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule],
 })
 export class StudentComponent implements OnInit {
-  courses$!: Observable<any[]>; // Observable for courses
-  loading$!: Observable<boolean>;  // Observable for loading state
-  error$!: Observable<string | null>;  // Observable for error state
+  courses$!: Observable<any[]>; 
+  loading$!: Observable<boolean>;
+  error$!: Observable<string | null>;
   hasCourses = false;
   activeView: string | null = null;
   username: string | undefined;
@@ -26,35 +25,42 @@ export class StudentComponent implements OnInit {
   constructor(
     private store: Store,
     private authService: AuthService,
-    private studentService: StudentService  
+    private studentService: StudentService
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to the username from AuthService
     this.authService.currentUserName$.subscribe(name => {
       this.username = name;
-      console.log('Username:', this.username); // Log username
+      console.log('Username:', this.username); 
     });
 
-    // Subscribe to the current user from AuthService to get their UID
     this.authService.currentUser$.subscribe({
       next: (currentUser) => {
-        console.log('currentUser:', currentUser); // Log currentUser
+        console.log('currentUser:', currentUser); 
         if (currentUser) {
           console.log('Current User ID:', currentUser.uid);
 
-          // Dispatch action to load courses and set loading state
+          // Dispatch action to load the courses of the student
           this.store.dispatch(loadStudentCourses({ studentId: currentUser.uid }));
-          console.log('Dispatched loadStudentCourses action for user:', currentUser.uid);
-          this.store.dispatch(loadStudentCourses({ studentId: currentUser.uid }));
+          
+          // Fetch courses and teacher information from the service
+          this.studentService.getCourses(currentUser.uid).subscribe({
+            next: (courses) => {
+              console.log('Courses fetched:', courses);
+              this.store.dispatch(loadStudentCoursesSuccess({ courses }));
+            },
+            error: (err) => {
+              console.error('Error fetching courses:', err);
+              this.store.dispatch(loadStudentCoursesFailure({ error: 'Error occurred while fetching courses.' }));
+            }
+          });
 
-
-          // Directly use selectors to get courses, loading, and error states from the store
-          this.courses$ = this.store.select(selectCourses);  // Automatically updates with store data
+          // Subscribe to courses$ observable from the store
+          this.courses$ = this.store.select(selectCourses);
           this.loading$ = this.store.select(selectLoading);
           this.error$ = this.store.select(selectError);
 
-          // Add logging to see the observable state for courses, loading, and error
+          // Log the courses, loading, and error states for debugging
           this.courses$.subscribe(courses => {
             console.log('Courses from the store selector:', courses);
           });
@@ -65,22 +71,6 @@ export class StudentComponent implements OnInit {
 
           this.error$.subscribe(error => {
             console.log('Error state from the store:', error);
-          });
-
-          // Optionally, fetch courses via the service and update the state via NgRx
-          this.studentService.getCourses(currentUser.uid).subscribe({
-            next: (courses) => {
-              console.log('Courses fetched:', courses);
-              console.log('✅ Dispatching loadStudentCoursesSuccess with:', courses);
-              // Dispatch success action to update the state with courses
-              this.store.dispatch(loadStudentCoursesSuccess({ courses }));
-              
-            },
-            error: (err) => {
-              console.error('Error fetching courses:', err);
-              // Dispatch failure action to store the error
-              this.store.dispatch(loadStudentCoursesFailure({ error: 'Error occurred while fetching courses.' }));
-            }
           });
         } else {
           console.log('No user is logged in.');
@@ -97,6 +87,6 @@ export class StudentComponent implements OnInit {
   toggleActiveButton(button: string) {
     this.activeButton = button;
     this.activeView = button;
-    console.log('Button pressed:', button); // Log the button press
+    console.log('Button pressed:', button); 
   }
 }
