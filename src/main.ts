@@ -12,9 +12,12 @@ import { TeacherComponent } from './app/teacher/teacher.component';
 import { PrincipalComponent } from './app/principal/principal.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
 import { studentReducer } from './app/student/reducer/student.reducer';
 import { teacherReducer } from './app/teacher/store/teacher.reducer';
 import { FirestoreSeeder } from './app/utils/firestore-seeder';
+import { TeacherEffects } from './app/teacher/store/teacher.effects';
+
 
 const routes: Routes = [
   { path: 'student', component: StudentComponent },
@@ -41,6 +44,7 @@ bootstrapApplication(AppComponent, {
       
       return firestore;
     }),
-    provideStore({ student: studentReducer , teacher: teacherReducer}) 
+    provideStore({ student: studentReducer , teacher: teacherReducer}),
+    
   ]
 }).catch(err => console.error(err));

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, getDocs } from '@angular/fire/firestore';
+import { Firestore, collection, getDocs, DocumentReference} from '@angular/fire/firestore';
 import { inject } from '@angular/core';
 import { Student, Course } from '../models/teacher.state';
-import { from } from 'rxjs';
 import { addDoc } from 'firebase/firestore';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +26,15 @@ export class TeacherService {
     });
   }
 
-  addCourse(course: Course) {
+  addCourse(course: Course): Observable<DocumentReference> {
+    console.log('🔥 Calling Firestore addCourse with:', course);
+    
+    // Ensure Firestore instance exists before using
+    if (!this.firestore) {
+      throw new Error('Firestore instance is undefined.');
+    }
+
     const coursesRef = collection(this.firestore, 'courses');
-    return from(addDoc(coursesRef, course)); // Adds the course to Firestore and returns an observable
+    return from(addDoc(coursesRef, course)); // ✅ Correct conversion of Promise to Observable
   }
 }
