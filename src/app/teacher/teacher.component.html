@@ -1,9 +1,32 @@
 <div class="container">
-<div class="students-list">
-  <h3>Students Assigned to You:</h3>
-  <ul>
-    <li *ngFor="let student of students$ | async">
-      <span>{{ student.name }}</span>
-    </li>
-  </ul>
+  <!-- Students List -->
+  <div class="students-list">
+    <h3>Students Assigned to You:</h3>
+    <ul>
+      <li *ngFor="let student of students$ | async" (click)="selectStudent(student)">
+        <span>{{ student.name }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Assign Grade Form -->
+  <div [ngClass]="{'assign-grade': true, 'active': selectedStudent}">
+    <h3 *ngIf="selectedStudent">Assign Grade to {{ selectedStudent.name }}</h3>
+
+    <!-- Course selection -->
+    <label for="course">Select Course:</label>
+    <select id="course" [(ngModel)]="selectedCourse">
+      <option *ngFor="let course of teacherCourses$ | async" [value]="course.id">
+        {{ course.name }}
+      </option>
+    </select>
+
+    <!-- Grade input -->
+    <div *ngIf="selectedCourse">
+      <label for="grade">Enter Grade:</label>
+      <input type="number" id="grade" [(ngModel)]="newGrade" min="0" max="100" />
+
+      <button (click)="submitGrade()">Save Grade</button>
+    </div>
+  </div>
 </div>

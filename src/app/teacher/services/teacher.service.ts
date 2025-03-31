@@ -47,31 +47,39 @@ export class TeacherService {
     });
   }
 
-  
-  updateGrade(studentId: string, courseId: string, newGrade: number): Observable<any> {
-    const studentRef = doc(this.firestore, 'students', studentId);
+ 
+  getCourses(teacherId: string): Observable<Course[]> {
+    console.log(`Fetching courses for teacherId: ${teacherId}`);
+    const coursesRef = collection(this.firestore, 'courses');
+    const coursesQuery = query(coursesRef, where('teacherId', '==', teacherId));
 
-    return new Observable((observer) => {
-      updateDoc(studentRef, {
-        [`grades.${courseId}`]: newGrade, 
-      })
-        .then(() => {
-          observer.next('Grade updated successfully');
-          observer.complete();
+    return new Observable<Course[]>((observer) => {
+      getDocs(coursesQuery)
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            
+            console.log('Raw Firestore for teacher data:', querySnapshot.docs);
+  
+            const courses: Course[] = querySnapshot.docs.map(doc => {
+              const course = doc.data() as Course;
+              course.id = doc.id;  
+              return course;
+              }
+            )
+            console.log('Mapped Courses:', courses); 
+            observer.next(courses); 
+          } else {
+            console.log('No courses found for this teacher.');
+            observer.next([]);  
+          }
         })
         .catch((error) => {
-          observer.error(error);
+          console.error('Error fetching courses:', error);
+          observer.error(error);  
         });
     });
   }
   
- 
-  getCourses(teacherId: string): Observable<Course[]> {
-    const coursesRef = collection(this.firestore, 'courses');
-    const coursesQuery = query(coursesRef, where('teacherId', '==', teacherId));
-    
-    return collectionData(coursesQuery, { idField: 'id' }) as Observable<Course[]>; 
-  }
 
   addCourse(course: Course): Observable<any> {
     const coursesRef = collection(this.firestore, 'courses');
@@ -86,4 +94,22 @@ export class TeacherService {
         });
     });
   }
+
+  updateGrade(studentId: string, courseId: string, newGrade: number): Observable<any> {
+    const studentRef = doc(this.firestore, 'students', studentId);
+  
+    return new Observable((observer) => {
+      updateDoc(studentRef, {
+        [`grades.${courseId}`]: newGrade, 
+      })
+        .then(() => {
+          observer.next('Grade updated successfully');
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error(error);
+        });
+    });
+  }
+  
 }
