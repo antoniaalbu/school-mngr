@@ -40,10 +40,10 @@ export class StudentComponent implements OnInit {
         if (currentUser) {
           console.log('Current User ID:', currentUser.uid);
 
-          // Dispatch action to load the courses of the student
+         
           this.store.dispatch(loadStudentCourses({ studentId: currentUser.uid }));
           
-          // Fetch courses and teacher information from the service
+          
           this.studentService.getCourses(currentUser.uid).subscribe({
             next: (courses) => {
               console.log('Courses fetched:', courses);
@@ -55,12 +55,12 @@ export class StudentComponent implements OnInit {
             }
           });
 
-          // Subscribe to courses$ observable from the store
+         
           this.courses$ = this.store.select(selectCourses);
           this.loading$ = this.store.select(selectLoading);
           this.error$ = this.store.select(selectError);
 
-          // Log the courses, loading, and error states for debugging
+          
           this.courses$.subscribe(courses => {
             console.log('Courses from the store selector:', courses);
           });

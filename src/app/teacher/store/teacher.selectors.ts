@@ -1,4 +1,4 @@
-// store/teacher.selectors.ts
+
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { TeacherState } from '../models/teacher.state';
 

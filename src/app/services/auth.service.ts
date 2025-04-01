@@ -4,9 +4,10 @@ import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { signOut } from '@angular/fire/auth';
-import { Store } from '@ngrx/store';  // Import Store
-import { setTeacher } from '../teacher/store/teacher.actions';  // Import action to update teacher state
+import { Store } from '@ngrx/store';  
+import { setTeacher } from '../teacher/store/teacher.actions';  
 import { map } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,7 @@ export class AuthService {
   public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
   public currentUserName$: Observable<string | undefined> = this.currentUserNameSubject.asObservable();
 
-  constructor(private store: Store) {  // Inject Store here
+  constructor(private store: Store, private router: Router) {  
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
         console.log('User found on refresh:', user);
@@ -30,6 +31,7 @@ export class AuthService {
         this.currentUserSubject.next(null);
       }
     });
+   
   }
 
   getCurrentUser(): Observable<User | null> {
@@ -40,14 +42,14 @@ export class AuthService {
     try {
       console.log('Attempting to register user with email:', email);
   
-      // Register user
+     
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
   
       console.log('User registered successfully:', user);
       console.log('Storing user details in Firestore with role:', role);
   
-      // Store user in Firestore's 'users' collection
+      
       await setDoc(doc(this.firestore, 'users', user.uid), {
         uid: user.uid,
         name: name,
@@ -56,7 +58,7 @@ export class AuthService {
         createdAt: new Date(),
       });
   
-      // If the role is 'teacher', also add to 'teachers' collection
+    
       if (role === 'teacher') {
         await setDoc(doc(this.firestore, 'teachers', user.uid), {
           uid: user.uid,
@@ -68,24 +70,24 @@ export class AuthService {
   
         console.log('Teacher added to teachers collection:', user.uid);
   
-        // Dispatch an action to update the TeacherState in the store
+        
         this.store.dispatch(setTeacher({
           teacher: { id: user.uid, name: name },
         }));
       }
   
-      // If the role is 'student', also add to 'students' collection
+      
       if (role === 'student') {
         await setDoc(doc(this.firestore, 'students', user.uid), {
           uid: user.uid,
           name: name,
           email: email,
-          teacherId: 'NJjJ9qZyZKeiP3a4IuI9kdlkUr12', // Initially, you can leave teacherId empty or null
+          teacherId: 'NJjJ9qZyZKeiP3a4IuI9kdlkUr12', 
           grades: {
-            // Initialize with course IDs and their corresponding grades
-            'course1': 85, // Grade for course with ID 'course1'
-            'course2': 90, // Grade for course with ID 'course2'
-            'course3': 78, // Grade for course with ID 'course3'
+           
+            'course1': 85, 
+            'course2': 90, 
+            'course3': 78, 
           },
           createdAt: new Date(),
         });
@@ -93,7 +95,7 @@ export class AuthService {
         console.log('Student added to students collection:', user.uid);
       }
   
-      // Set the current user
+     
       this.setCurrentUser(user);
     } catch (error) {
       console.error('Error during registration:', error);
@@ -114,12 +116,27 @@ export class AuthService {
     }
   }
 
+  async getUserProfile(uid: string): Promise<any> {
+    const userRef = doc(this.firestore, 'users', uid);
+    const docSnap = await getDoc(userRef);
+  
+    if (docSnap.exists()) {
+      return docSnap.data();
+    } else {
+      console.error('User profile not found in Firestore');
+      throw new Error('User profile not found');
+    }
+  }
+  
+
   async logout(): Promise<void> {
     try {
       await signOut(this.auth); 
       this.currentUserSubject.next(null); 
       this.currentUserNameSubject.next(undefined); 
+      
       console.log('User logged out successfully');
+      this.router.navigate(['/']);
     } catch (error) {
       console.error('Error during logout:', error);
       throw error;
@@ -134,7 +151,7 @@ export class AuthService {
     return this.currentUserName$;
   }
 
-  // Expose a getter for current user's UID
+ 
   get currentUserUid$(): Observable<string | null> {
     return this.currentUser$.pipe(
       map(user => user ? user.uid : null)
@@ -153,19 +170,5 @@ export class AuthService {
       .catch(error => console.error('Error fetching user profile:', error));
   }
 
-  private getUserProfile(uid: string): Promise<any> {
-    const userRef = doc(this.firestore, 'users', uid);
-    return getDoc(userRef)
-      .then(docSnap => {
-        if (docSnap.exists()) {
-          return docSnap.data();
-        } else {
-          throw new Error('User profile not found');
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching user profile:', error);
-        throw error;
-      });
-  }
+  
 }
