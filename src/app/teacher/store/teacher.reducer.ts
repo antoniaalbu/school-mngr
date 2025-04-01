@@ -1,4 +1,4 @@
-// store/teacher.reducer.ts
+
 import { createReducer, on } from '@ngrx/store';
 import { TeacherState } from '../models/teacher.state';
 import {

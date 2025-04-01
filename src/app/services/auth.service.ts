@@ -136,7 +136,7 @@ export class AuthService {
       this.currentUserNameSubject.next(undefined); 
       
       console.log('User logged out successfully');
-      this.router.navigate(['']);
+      this.router.navigate(['/']);
     } catch (error) {
       console.error('Error during logout:', error);
       throw error;

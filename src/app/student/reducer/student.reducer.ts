@@ -11,7 +11,7 @@ export const initialState: StudentState = {
 export const studentReducer = createReducer(
   initialState,
   on(loadStudentCoursesSuccess, (state, { courses }) => {
-    console.log('Reducer state after courses are loaded:', { ...state, courses });  // Log state after success action
+    console.log('Reducer state after courses are loaded:', { ...state, courses });  
     return {
       ...state,
       loading: false,

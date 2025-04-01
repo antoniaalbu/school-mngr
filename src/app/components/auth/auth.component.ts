@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
       console.log('User logged in:', user);
   
       if (user) {
-        // Fetch role from Firestore
+
         const userProfile = await this.authService.getUserProfile(user.uid);
         const role = userProfile?.role;
   
