@@ -1,32 +1,82 @@
-<div class="container">
-  <!-- Students List -->
-  <div class="students-list">
-    <h3>Students Assigned to You:</h3>
-    <ul>
-      <li *ngFor="let student of students$ | async" (click)="selectStudent(student)">
-        <span>{{ student.name }}</span>
-      </li>
-    </ul>
-  </div>
+<div class="split-screen">
+  <!-- Split Screen Layout -->
+  <div class="container"></div>
 
-  <!-- Assign Grade Form -->
-  <div [ngClass]="{'assign-grade': true, 'active': selectedStudent}">
-    <h3 *ngIf="selectedStudent">Assign Grade to {{ selectedStudent.name }}</h3>
-
-    <!-- Course selection -->
-    <label for="course">Select Course:</label>
-    <select id="course" [(ngModel)]="selectedCourse">
-      <option *ngFor="let course of teacherCourses$ | async" [value]="course.id">
-        {{ course.name }}
-      </option>
-    </select>
-
-    <!-- Grade input -->
-    <div *ngIf="selectedCourse">
-      <label for="grade">Enter Grade:</label>
-      <input type="number" id="grade" [(ngModel)]="newGrade" min="0" max="100" />
-
-      <button (click)="submitGrade()">Save Grade</button>
+  <!-- Left Side: User Profile Section -->
+  <div class="user-profile" *ngIf="!showAssignedStudents">
+    <div class="circle-image-container">
+      <div class="circle-image">
+        <img src="avatar.jpg" alt="Profile Picture">
+      </div>
+    </div>
+    <div class="user-info">
+      <div class="user-name">
+        <h2>Welcome, {{ username }}</h2>
+      </div>
+      <div class="button-group">
+        <button class="add-btn" (click)="toggleAssignedStudents()">
+          {{ showAssignedStudents ? 'Hide Assigned Students' : 'Show Assigned Students' }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Left Side: Container with Assigned Students -->
+  <div *ngIf="showAssignedStudents" class="students-container">
+    
+
+    <div class="user-profile">
+    <!-- Students List Below User Profile -->
+    <div class="students-list">
+      <h3>Students Assigned to You:</h3>
+      <ul class="list-style">
+        <li *ngFor="let student of students$ | async" (click)="selectStudent(student)">
+          <span>{{ student.name }}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="button-group">
+      <button class="add-btn" (click)="toggleAssignedStudents()">Hide Assigned Students</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- Right Side: Content Section (Grades Form) -->
+  <div class="content-container">
+    <!-- Grades List (Styled like Students List) -->
+    <div class="grades-container" *ngIf="selectedStudent">
+      <h3>Grades for {{ selectedStudent.name }}</h3>
+      <ul class="list-style">
+        <li *ngFor="let grade of studentGrades">
+          <span>Course: {{ grade.courseName }} - Grade: {{ grade.grade }}</span>
+        </li>
+      </ul>
+
+      <!-- Add Grade Button -->
+      <button class="add-btn" (click)="showAssignGradeForm = true">+ Add Grade</button>
+    </div>
+
+    <!-- Assign Grade Form (Only Opens When 'Add Grade' is Clicked) -->
+    <div [ngClass]="{'assign-grade': true, 'active': showAssignGradeForm}">
+      <h3 *ngIf="selectedStudent">Assign Grade to {{ selectedStudent.name }}</h3>
+
+      <!-- Course selection -->
+      <label for="course">Select Course:</label>
+      <select id="course" [(ngModel)]="selectedCourse">
+        <option *ngFor="let course of teacherCourses$ | async" [value]="course.id">
+          {{ course.name }}
+        </option>
+      </select>
+
+      <!-- Grade input -->
+      <div *ngIf="selectedCourse">
+        <label for="grade">Enter Grade:</label>
+        <input type="number" id="grade" [(ngModel)]="newGrade" min="0" max="100" />
+        <div class="button-group">
+          <button class="add-btn" (click)="submitGrade()">Save Grade</button>
+          <button class="cancel-btn" (click)="showAssignGradeForm = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div> <!-- End of content-container -->
+</div> <!-- End of split-screen -->
