@@ -17,37 +17,51 @@ export class TeacherService {
   }
 
   getStudents(teacherId: string): Observable<Student[]> {
-    const studentsRef = collection(this.firestore, 'students');
-    const studentsQuery = query(studentsRef, where('teacherId', '==', teacherId));
+  const studentsRef = collection(this.firestore, 'students');
   
-    return new Observable<Student[]>((observer) => {
-      getDocs(studentsQuery)
-        .then((querySnapshot) => {
-          if (!querySnapshot.empty) {
-            
-            console.log('Raw Firestore data:', querySnapshot.docs);
-  
-            const students: Student[] = querySnapshot.docs.map(doc => {
-              const student = doc.data() as Student;
-              student.id = doc.id;  
-              return student;
-            });
-  
-            console.log('Mapped Students:', students); 
-            observer.next(students); 
-          } else {
-            console.log('No students found for this teacher.');
-            observer.next([]);  
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching students:', error);
-          observer.error(error);  
-        });
-    });
-  }
+  return new Observable<Student[]>((observer) => {
+    getDocs(studentsRef)
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          console.log('Raw Firestore data:', querySnapshot.docs);
 
- 
+          const students: Student[] = querySnapshot.docs
+            .map((doc) => {
+              const student = doc.data() as Student;
+              student.id = doc.id;
+
+              // Log the teachers field to see if it's structured correctly
+              console.log('Teachers field for student:', student.teachers);
+
+              // Check if the 'teachers' field exists and contains the teacherId
+              if (student.teachers && Object.values(student.teachers).includes(teacherId)) {
+                console.log('Student assigned to this teacher:', student); // Print the student
+                return student; // Add student to the list if they have the teacherId
+              } else {
+                return null; // Skip students who do not have the teacherId
+              }
+            })
+            .filter((student) => student !== null); // Remove any null values
+
+          console.log('Mapped and filtered Students:', students); // Log the filtered students
+          observer.next(students); // Return the filtered students
+        } else {
+          console.log('No students found for this teacher.');
+          observer.next([]);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching students:', error);
+        observer.error(error);
+      });
+  });
+}
+
+  
+  
+  
+  
+  
   getCourses(teacherId: string): Observable<Course[]> {
     const coursesRef = collection(this.firestore, 'courses');
     const coursesQuery = query(coursesRef, where('teacherId', '==', teacherId));
@@ -105,18 +119,23 @@ export class TeacherService {
     });
   }
 
-  getStudentGrades(studentId: string): Observable<{ courseId: string; courseName: string; grade: number }[]> {
+  getStudentGrades(studentId: string, teacherId: string): Observable<{ courseId: string; courseName: string; grade: number }[]> {
     const studentRef = doc(this.firestore, 'students', studentId); // Reference to student doc
     const coursesRef = collection(this.firestore, 'courses'); // Reference to courses collection
   
     return new Observable(observer => {
-      // Fetch courses first
-      getDocs(coursesRef)
+      // Fetch the courses taught by the teacher
+      getDocs(query(coursesRef, where('teacherId', '==', teacherId)))  // Get courses where the teacherId matches
         .then(coursesSnapshot => {
-          const coursesMap = new Map<string, string>(); // Map courseId to courseName
+          const coursesMap = new Map<string, string>();  // Map courseId to course name
+  
+          // Populate the map with courseId and courseName
           coursesSnapshot.forEach(courseDoc => {
             const courseData = courseDoc.data();
-            coursesMap.set(courseDoc.id, courseData?.['name']); // Store course name
+            const courseName = courseData?.['name'];
+            if (courseName) {
+              coursesMap.set(courseDoc.id, courseName);  // Store course name with courseId
+            }
           });
   
           // Fetch student grades
@@ -127,17 +146,21 @@ export class TeacherService {
                 const gradesData = studentData?.['grades'];
   
                 if (gradesData && typeof gradesData === 'object') {
-                  const grades = Object.entries(gradesData).map(([courseId, grade]) => ({
-                    courseId, // Keep courseId
-                    courseName: coursesMap.get(courseId) || 'Unknown Course', // Get course name
-                    grade: grade as number,
-                  }));
-                  observer.next(grades);
+                  // Filter grades to only include courses taught by the teacher
+                  const filteredGrades = Object.entries(gradesData)
+                    .filter(([courseId, _]) => coursesMap.has(courseId))  // Only include grades for teacher's courses
+                    .map(([courseId, grade]) => ({
+                      courseId,
+                      courseName: coursesMap.get(courseId) || 'Unknown Course', // Get course name from the map
+                      grade: grade as number,
+                    }));
+  
+                  observer.next(filteredGrades);  // Emit the filtered grades
                 } else {
-                  observer.next([]); // No grades available
+                  observer.next([]);  // No grades available
                 }
               } else {
-                observer.next([]); // Student not found
+                observer.next([]);  // Student not found
               }
             })
             .catch(error => observer.error(error));
@@ -145,6 +168,7 @@ export class TeacherService {
         .catch(error => observer.error(error));
     });
   }
+  
   
   addGrade(studentId: string, newGradeEntry: { courseId: string; grade: number; courseName: string }): Observable<void> {
     const studentRef = doc(this.firestore, 'students', studentId);

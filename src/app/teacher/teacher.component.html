@@ -14,8 +14,19 @@
         <h2>Welcome, {{ username }}</h2>
       </div>
       <div class="button-group">
-        <button class="add-btn" (click)="toggleAssignedStudents()">
-          {{ showAssignedStudents ? 'Hide Assigned Students' : 'Show Assigned Students' }}
+        <button class="animated-button" (click)="toggleAssignedStudents()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg>
+          <span class="text">View Students</span>
+          <span class="circle"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg>
         </button>
       </div>
     </div>
@@ -36,7 +47,19 @@
       </ul>
     </div>
     <div class="button-group">
-      <button class="add-btn" (click)="toggleAssignedStudents()">Hide Assigned Students</button>
+      <button class="animated-button" (click)="toggleAssignedStudents()"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+        <path
+          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+        ></path>
+      </svg>
+      <span class="text">Hide students</span>
+      <span class="circle"></span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+        <path
+          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+        ></path>
+      </svg></button>
+      
     </div>
   </div>
   </div>
@@ -53,7 +76,18 @@
       </ul>
 
       <!-- Add Grade Button -->
-      <button class="add-btn" (click)="showAssignGradeForm = true">+ Add Grade</button>
+      <button class="animated-button" (click)="showAssignGradeForm = true"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+        <path
+          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+        ></path>
+      </svg>
+      <span class="text">+ Add grade</span>
+      <span class="circle"></span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+        <path
+          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+        ></path>
+      </svg></button>
     </div>
 
     <!-- Assign Grade Form (Only Opens When 'Add Grade' is Clicked) -->
@@ -73,8 +107,30 @@
         <label for="grade">Enter Grade:</label>
         <input type="number" id="grade" [(ngModel)]="newGrade" min="0" max="100" />
         <div class="button-group">
-          <button class="add-btn" (click)="submitGrade()">Save Grade</button>
-          <button class="cancel-btn" (click)="showAssignGradeForm = false">Cancel</button>
+          <button class="animated-button" (click)="submitGrade()"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg>
+          <span class="text">Save Grade</span>
+          <span class="circle"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg></button>
+          <button class="animated-button" (click)="showAssignGradeForm = false"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg>
+          <span class="text">Cancel</span>
+          <span class="circle"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg></button>
         </div>
       </div>
     </div>

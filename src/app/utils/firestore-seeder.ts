@@ -48,8 +48,12 @@ export class FirestoreSeeder {
           'course1': 92,           
           'course2': 88,           
           'course3': 95         
-        }       
-      },       
+        },
+        teachers: {           
+            'id1': '92',           
+          }       
+      },    
+      
       {         
         id: 'student2',          
         name: 'Bob Smith',         
@@ -59,7 +63,10 @@ export class FirestoreSeeder {
           'course1': 85,           
           'course2': 90,           
           'course3': 82         
-        }       
+        },
+        teachers: {           
+            'id1': '92',           
+          }       
       },       
       {         
         id: 'student3',         
@@ -70,7 +77,10 @@ export class FirestoreSeeder {
           'course1': 78,           
           'course2': 82,           
           'course3': 80         
-        }       
+        },
+        teachers: {           
+            'id1': '92',           
+          }     
       }     
     ];      
 

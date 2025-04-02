@@ -1,72 +1,145 @@
-<div class="split-screen">
-  <div class="background-container"></div>
-
-  <div class="user-profile">
-    <div class="circle-image-container">
-      <div class="circle-image">
-        <img src="avatar.jpg" alt="Profile Picture">
-      </div>
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="profile">
+      <img src="avatar.jpg" alt="Profile Picture" class="profile-img">
+      <h2>Welcome, {{ username }}</h2>
     </div>
-    <div class="user-info">
-      <div class="user-name">
-        <h2>{{ username }}</h2>
-      </div>
-      <div class="button-group">
-        <button 
-          (click)="toggleActiveButton('grades')" 
-          [class.active]="activeButton === 'grades'">View My Grades</button>
-        <button 
-          (click)="toggleActiveButton('courses')" 
-          [class.active]="activeButton === 'courses'">Enrolled Courses</button>
-        <button 
-          (click)="toggleActiveButton('teachers')" 
-          [class.active]="activeButton === 'teachers'">View Teachers</button>
-      </div>
-    </div>
-  </div>
+    <nav class="menu">
+      <!-- From Uiverse.io by ryota1231 --> 
+      <button class="animated-button" (click)="toggleActiveButton('teachers')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+          <path
+            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+          ></path>
+        </svg>
+        <span class="text">Enrolled Courses</span>
+        <span class="circle"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+          <path
+            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+          ></path>
+        </svg>
+      </button>
 
-  <div *ngIf="loading$ | async; else coursesList">
-    <p>Loading...</p>
-  </div>
+      <!-- Added Manage Courses Button -->
+      <button class="animated-button" (click)="toggleActiveButton('manageCourses')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+          <path
+            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+          ></path>
+        </svg>
+        <span class="text">Manage Courses</span>
+        <span class="circle"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+          <path
+            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+          ></path>
+        </svg>
+      </button>
+    </nav>
+  </aside>
 
-  <ng-template #coursesList>
-    <div class="course-container" *ngIf="courses$ | async as courses; else noCourses">
-      <div *ngIf="courses && courses.length > 0">
+  <!-- Main Content -->
+  <main class="main-content">
+    <div *ngIf="loading$ | async" class="loading">Loading...</div>
+    
+    <!-- Original Teachers View -->
+    <ng-container *ngIf="!(loading$ | async) && activeButton === 'teachers'">
+      <div class="course-list" *ngIf="courses$ | async as courses; else noCourses">
+        <h2>Courses & Teachers</h2>
+        <ul *ngIf="courses.length > 0; else noCourses">
+          <li *ngFor="let course of courses" (click)="selectCourse(course)">
+            <span class="course-name">{{ course.courseName }}</span> - 
+            <span class="teacher-name">{{ course.teacher || 'Unknown' }}</span>
+          </li>
+        </ul>
+      </div>
+      
+      
+      <!-- Display Grades for Selected Course -->
+      <div class="grades-section" *ngIf="selectedCourse">
+        <h3>Grades for {{ selectedCourse.courseName }}</h3>
+        <ul class="grade-list">
+          <li *ngFor="let grade of selectedCourse.grade">{{ grade }}</li>
+        </ul>
+      </div>
+    </ng-container>
+
+    <!-- Manage Courses View -->
+    <ng-container *ngIf="!(loading$ | async) && activeButton === 'manageCourses'">
+      <div class="course-management">
+        <h2>Course Management</h2>
         
-        <div *ngIf="activeView === 'grades'">
-          <ul>
-            <li *ngFor="let course of courses">
-              <span class="course-name">{{ course.courseName }}</span> - Grade: 
-              {{ course.grade || 'N/A' }}
-            </li>
-          </ul>
+        <!-- Sub-buttons - shown only when no manage view is selected -->
+        <div class="manage-options" *ngIf="!manageView">
+          <button class="manage-option-btn" (click)="setManageView('enrolled')">
+            <div class="option-icon">📚</div>
+            <h3>My Enrolled Courses</h3>
+            <p>View and manage your current course enrollments</p>
+          </button>
+          
+          <button class="manage-option-btn" (click)="setManageView('available')">
+            <div class="option-icon">🔍</div>
+            <h3>Available Courses</h3>
+            <p>Browse and enroll in new courses</p>
+          </button>
         </div>
-
-        <div *ngIf="activeView === 'courses'">
-          <ul>
-            <li *ngFor="let course of courses">
-              <span class="course-name">{{ course.courseName }}</span>
-            </li>
-          </ul>
+        
+        <!-- Enrolled Courses List -->
+        <div *ngIf="manageView === 'enrolled'" class="manage-view-container">
+          <div class="view-header">
+            <button class="back-btn" (click)="clearManageView()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <h3>My Enrolled Courses</h3>
+          </div>
+          
+          <div *ngIf="courses$ | async as courses; else noCourses" class="course-list unenroll-list">
+            <ul>
+              <li *ngFor="let course of courses">
+                <span class="course-name">{{ course.courseName }}</span> - 
+                <span class="teacher-name">{{ course.teacher || 'Unknown' }}</span>
+                <button class="unenroll-btn" (click)="unenrollFromCourse(course.courseId)">Unenroll</button>
+              </li>
+            </ul>
+          </div>
         </div>
-
-        <div *ngIf="activeView === 'teachers'">
-          <ul>
-            <li *ngFor="let course of courses">
-              <span class="course-name">{{ course.courseName }}</span> - Teacher: 
-              {{ course.teacher || 'Unknown' }}
-            </li>
-          </ul>
+        
+        <!-- Available Courses List -->
+        <div *ngIf="manageView === 'available'" class="manage-view-container">
+          <div class="view-header">
+            <button class="back-btn" (click)="clearManageView()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <h3>Available Courses</h3>
+          </div>
+          
+          <div *ngIf="availableCourses$ | async as availableCourses; else noAvailableCourses" class="course-list enroll-list">
+            <ul>
+              <li *ngFor="let course of availableCourses">
+                <span class="course-name">{{ course.name }}</span> - 
+                <span class="teacher-name">{{ course.teacherName || 'Unknown' }}</span>
+                <button class="enroll-btn" (click)="enrollInCourse(course.id)">Enroll</button>
+              </li>
+            </ul>
+          </div>
+          
+          <ng-template #noAvailableCourses>
+            <p class="no-courses">No available courses to enroll in.</p>
+          </ng-template>
         </div>
       </div>
-    </div>
+    </ng-container>
 
     <ng-template #noCourses>
       <p class="no-courses">No courses enrolled.</p>
     </ng-template>
-  </ng-template>
-
-  <ng-template #errorMessage>
-    <p *ngIf="error$ | async" class="error-message">{{ error$ | async }}</p>
-  </ng-template>
+  </main>
 </div>
