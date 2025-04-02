@@ -6,6 +6,7 @@ import { selectCourses, selectLoading, selectError } from './store/student.selec
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { StudentService } from '../services/student.service'; 
+
 @Component({
   selector: 'app-student',
   templateUrl: './student.component.html',
@@ -15,12 +16,16 @@ import { StudentService } from '../services/student.service';
 })
 export class StudentComponent implements OnInit {
   courses$!: Observable<any[]>; 
+  availableCourses$!: Observable<any[]>;
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
   hasCourses = false;
   activeView: string | null = null;
   username: string | undefined;
   activeButton: string = '';
+  selectedCourse: any = null;
+  manageView: string = ''; // Empty string means no specific manage view is selected
+  userId: string | null = null;
 
   constructor(
     private store: Store,
@@ -39,10 +44,10 @@ export class StudentComponent implements OnInit {
         console.log('currentUser:', currentUser); 
         if (currentUser) {
           console.log('Current User ID:', currentUser.uid);
-
-         
-          this.store.dispatch(loadStudentCourses({ studentId: currentUser.uid }));
+          this.userId = currentUser.uid;
           
+          // Load student courses
+          this.store.dispatch(loadStudentCourses({ studentId: currentUser.uid }));
           
           this.studentService.getCourses(currentUser.uid).subscribe({
             next: (courses) => {
@@ -55,12 +60,12 @@ export class StudentComponent implements OnInit {
             }
           });
 
-         
+          // Set up selectors
           this.courses$ = this.store.select(selectCourses);
           this.loading$ = this.store.select(selectLoading);
           this.error$ = this.store.select(selectError);
-
           
+          // Debug subscriptions
           this.courses$.subscribe(courses => {
             console.log('Courses from the store selector:', courses);
           });
@@ -84,9 +89,79 @@ export class StudentComponent implements OnInit {
     });
   }
 
+  selectCourse(course: any) {
+    this.selectedCourse = course;
+    console.log('Selected course:', course);
+  }
+
   toggleActiveButton(button: string) {
     this.activeButton = button;
     this.activeView = button;
-    console.log('Button pressed:', button); 
+    console.log('Button pressed:', button);
+    
+    // Clear any selected manage view when changing main view
+    if (button === 'manageCourses') {
+      this.manageView = '';
+    }
+  }
+  
+  setManageView(view: string) {
+    this.manageView = view;
+    console.log('Manage view set to:', view);
+    
+    if (view === 'available') {
+      this.loadAvailableCourses();
+    }
+  }
+  
+  clearManageView() {
+    // Go back to the manage options view
+    this.manageView = '';
+  }
+  
+  loadAvailableCourses() {
+    if (this.userId) {
+      this.availableCourses$ = this.studentService.getAvailableCourses(this.userId);
+    }
+  }
+  
+  enrollInCourse(courseId: string) {
+    if (this.userId) {
+      this.studentService.enrollInCourse(this.userId, courseId).subscribe({
+        next: () => {
+          console.log('Successfully enrolled in course:', courseId);
+          // Refresh both course lists
+          this.loadAvailableCourses();
+          if (this.userId) {
+            this.studentService.getCourses(this.userId).subscribe(courses => {
+              this.store.dispatch(loadStudentCoursesSuccess({ courses }));
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Error enrolling in course:', err);
+        }
+      });
+    }
+  }
+  
+  unenrollFromCourse(courseId: string) {
+    if (this.userId) {
+      this.studentService.unenrollFromCourse(this.userId, courseId).subscribe({
+        next: () => {
+          console.log('Successfully unenrolled from course:', courseId);
+          // Refresh both course lists
+          this.loadAvailableCourses();
+          if (this.userId) {
+            this.studentService.getCourses(this.userId).subscribe(courses => {
+              this.store.dispatch(loadStudentCoursesSuccess({ courses }));
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Error unenrolling from course:', err);
+        }
+      });
+    }
   }
 }

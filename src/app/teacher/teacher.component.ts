@@ -68,13 +68,14 @@ export class TeacherComponent implements OnInit {
   }
 
   fetchGrades(studentId: string): void {
-    this.teacherService.getStudentGrades(studentId).subscribe({
+    this.teacherService.getStudentGrades(studentId, this.teacherId).subscribe({
       next: (grades) => {
         this.studentGrades = grades;
       },
       error: (err) => console.error('Error fetching grades:', err),
     });
   }
+  
 
   submitGrade(): void {
     if (this.selectedStudent && this.selectedCourse && this.newGrade !== null) {
@@ -101,8 +102,11 @@ export class TeacherComponent implements OnInit {
     let courseName = '';
     this.teacherCourses$.subscribe(courses => {
       const selectedCourse = courses.find(course => course.id === courseId);
-      courseName = selectedCourse ? selectedCourse.name : '';
+      if (selectedCourse) {
+        courseName = selectedCourse.name;
+      }
     });
     return courseName;
   }
+  
 }

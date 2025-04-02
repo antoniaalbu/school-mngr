@@ -4,6 +4,7 @@ export interface Student {
   email: string;
   grades: Record<string, number>;  
   teacherId: string;  
+  teachers: Record<string, string>;  
 }
 
 export interface Course {
