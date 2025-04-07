@@ -1,6 +1,6 @@
 
 import { createReducer, on } from '@ngrx/store';
-import { TeacherState } from '../models/teacher.state';
+import { Teacher } from '../models/teacher.state';
 import {
   setTeacher,
   loadStudents,
@@ -15,7 +15,7 @@ import {
   addCourseFailure
 } from './teacher.actions';
 
-export const initialState: TeacherState = {
+export const initialState: Teacher = {
   teacher: null,
   students: [],
   courses: [],

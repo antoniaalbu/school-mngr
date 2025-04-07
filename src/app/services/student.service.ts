@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Firestore, collection, doc, getDoc, getDocs, query, where, updateDoc, setDoc, deleteField } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
 import { Observable, from, map, catchError, of } from 'rxjs';
+import { Course } from '../teacher/models/teacher.state';
 
 @Injectable({
   providedIn: 'root',
@@ -142,57 +143,133 @@ export class StudentService {
         });
     });
   }
-  
-  enrollInCourse(studentId: string, courseDoc: any): Observable<void> {
-    console.log(`Enrolling student ${studentId} in course ${courseDoc.name}`);
-  
-    return new Observable((observer) => {
-      // Find the student document
-      getDocs(query(collection(this.firestore, 'students'), where('uid', '==', studentId)))
-        .then(async (studentSnapshot) => {
-          if (studentSnapshot.empty) {
-            console.error('No student found with ID:', studentId);
-            observer.error('Student not found');
-            return;
-          }
-  
-          const studentDocRef = studentSnapshot.docs[0].ref;
-          const studentData = studentSnapshot.docs[0].data();
-  
-          // Extract the teacherId directly from the provided course document
-          const teacherId = courseDoc.teacherId || null;
-  
-          if (!teacherId) {
-            console.warn(`Course ${courseDoc.name} does not have an assigned teacher.`);
-          }
-  
-          // Update the grades field and assign the teacher to the student
-          const updatedGrades = { ...studentData['grades'] || {} };
-          updatedGrades[courseDoc] = []; // Initialize with an empty grades array
-  
-          // Update the teacher assignment field (if necessary)
-          const updatedTeachers = { ...studentData['teachers'] || {} };
-          if (teacherId) {
-            updatedTeachers[courseDoc] = teacherId;
-          }
-  
-          // Update the student document
-          await updateDoc(studentDocRef, { 
-            grades: updatedGrades,
-            teachers: updatedTeachers  // Add or update teacher assignment
-          });
-  
-          console.log(`Successfully enrolled student ${studentId} in course ${courseDoc.name} with teacher ${teacherId}`);
-          observer.next();
+
+  // In your StudentService
+getCourseById(courseId: string): Observable<Course> {
+  return new Observable<Course>((observer) => {
+    const courseDocRef = doc(this.firestore, 'courses', courseId); // Reference to the specific course document
+    getDoc(courseDocRef)
+      .then((docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const courseData = docSnapshot.data(); // Get the course data from Firestore
+          const course: Course = {
+            id: docSnapshot.id,  // Get the document ID (it's already passed as courseId)
+            name: courseData['name'],  // Ensure 'name' is fetched correctly
+            teacherId: courseData['teacherId'],  // Ensure 'teacherId' is fetched correctly
+            // You can add more fields here if needed
+          };
+          console.log('Course data retrieved:', course);  // Debug the course object here
+          observer.next(course);  // Emit the course object
           observer.complete();
-        })
-        .catch((error) => {
-          console.error('Error enrolling in course:', error);
-          observer.error(error);
-        });
-    });
-  }
+        } else {
+          console.error(`Course with ID ${courseId} does not exist.`);
+          observer.error('Course not found');
+        }
+      })
+      .catch((error) => {
+        console.error('Error retrieving course document:', error);
+        observer.error(error);
+      });
+  });
+}
+
   
+enrollInCourse(studentId: string, courseDocId: string): Observable<void> {
+  console.log(`Starting enrollment for student: ${studentId}`);
+  console.log(`Course ID: ${courseDocId}`);
+
+  // Fetch the course document using its ID
+  const fetchCourse = async (courseDocId: string) => {
+    try {
+      const courseDocRef = doc(this.firestore, 'courses', courseDocId); // Get the course document reference
+      const courseSnapshot = await getDoc(courseDocRef); // Fetch the course document
+
+      if (courseSnapshot.exists()) {
+        const courseDoc = courseSnapshot.data(); // Get the course data from the snapshot
+        console.log('Course Document:', courseDoc);
+
+        // Check that the course document has the necessary fields
+        if (!courseDoc || !courseDoc['name'] || !courseDoc['id'] || !courseDoc['teacherId']) {
+          console.error('❌ Course document is missing required information:', courseDoc);
+          throw new Error('Course document is incomplete');
+        }
+
+        return courseDoc; // Return the course document
+      } else {
+        console.error('❌ No course found with ID:', courseDocId);
+        throw new Error('Course not found');
+      }
+    } catch (error) {
+      console.error('❗ Error fetching course:', error);
+      throw error; // Rethrow error to handle in the main method
+    }
+  };
+
+  return new Observable((observer) => {
+    // Fetch the course document first
+    fetchCourse(courseDocId)
+      .then((courseDoc) => {
+        // Proceed with the student enrollment process
+        getDocs(query(collection(this.firestore, 'students'), where('uid', '==', studentId)))
+          .then(async (studentSnapshot) => {
+            if (studentSnapshot.empty) {
+              console.error(`❌ No student found with UID: ${studentId}`);
+              observer.error('Student not found');
+              return;
+            }
+
+            const studentDocRef = studentSnapshot.docs[0].ref;
+            const studentData = studentSnapshot.docs[0].data();
+            console.log(`✅ Student document found. Name: ${studentData?.['name'] || 'Unknown'}`);
+
+            const courseId = courseDoc?.['id'];
+            const teacherId = courseDoc?.['teacherId'] || null;
+
+            // Check if courseId is valid
+            if (!courseId) {
+              console.error('❌ Course document is missing an ID.');
+              observer.error('Invalid course document');
+              return;
+            }
+
+            // If no teacherId, warn about it
+            if (!teacherId) {
+              console.warn(`⚠️ Course "${courseDoc?.['name']}" does not have an assigned teacher.`);
+            }
+
+            // Initialize grades and teachers
+            const updatedGrades = { ...studentData['grades'] || {} };
+            updatedGrades[courseId] = []; // Set to an empty array for new course
+
+            const updatedTeachers = { ...studentData['teachers'] || {} };
+            if (teacherId) {
+              updatedTeachers[courseId] = teacherId;
+              console.log(`📌 Assigning teacherId "${teacherId}" to course "${courseId}"`);
+            }
+
+            // Update student document with new grades and teachers
+            await updateDoc(studentDocRef, { 
+              grades: updatedGrades,
+              teachers: updatedTeachers
+            });
+
+            console.log(`🎉 Successfully enrolled student ${studentId} in "${courseDoc?.['name']}" (${courseId})`);
+            observer.next();
+            observer.complete();
+          })
+          .catch((error) => {
+            console.error('❗ Error during enrollment:', error);
+            observer.error(error);
+          });
+      })
+      .catch((error) => {
+        console.error('❗ Error fetching course data:', error);
+        observer.error(error);
+      });
+  });
+}
+
+
   
   
   // Unenroll student from a course

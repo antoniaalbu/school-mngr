@@ -1,30 +1,30 @@
 
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { TeacherState } from '../models/teacher.state';
+import { Teacher} from '../models/teacher.state';
 
-export const selectTeacherState = createFeatureSelector<TeacherState>('teacher');
+export const selectTeacherState = createFeatureSelector<Teacher>('teacher');
 
 export const selectTeacher = createSelector(
   selectTeacherState,
-  (state: TeacherState) => state.teacher
+  (state: Teacher) => state.teacher
 );
 
 export const selectStudents = createSelector(
   selectTeacherState,
-  (state: TeacherState) => state.students
+  (state: Teacher) => state.students
 );
 
 export const selectCourses = createSelector(
   selectTeacherState,
-  (state: TeacherState) => state.courses
+  (state: Teacher) => state.courses
 );
 
 export const selectLoading = createSelector(
   selectTeacherState,
-  (state: TeacherState) => state.loading
+  (state: Teacher) => state.loading
 );
 
 export const selectError = createSelector(
   selectTeacherState,
-  (state: TeacherState) => state.error
+  (state: Teacher) => state.error
 );
