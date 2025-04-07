@@ -194,7 +194,7 @@ h2{
   height: auto;  
   min-height: none;  
   margin-top: 20px;
-
+  padding-top: 0;
 }
 
 .course-list{
