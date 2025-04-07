@@ -11,9 +11,9 @@
     </div>
     <div class="user-info">
       <div class="user-name">
-        <h2>Welcome, {{ username }}</h2>
+        <h2>Welcome</h2>
       </div>
-      <div class="button-group">
+    
         <button class="animated-button" (click)="toggleAssignedStudents()">
           <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
             <path
@@ -28,8 +28,11 @@
             ></path>
           </svg>
         </button>
-      </div>
+        <button class="logout-btn" (click)="onLogout()">Logout</button>
+      
     </div>
+
+   
   </div>
 
   <!-- Left Side: Container with Assigned Students -->

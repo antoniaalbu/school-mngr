@@ -78,7 +78,6 @@
   box-sizing: border-box;
   border-radius: 5px;
   border: 2px solid var(--main-color);
-  box-shadow: 4px 4px var(--main-color);
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -152,8 +151,6 @@
   background: lightgrey;
   gap: 20px;
   border-radius: 5px;
-  border: 2px solid var(--main-color);
-  box-shadow: 4px 4px var(--main-color);
 }
 
 .flip-card__back {
@@ -182,7 +179,6 @@
   border-radius: 5px;
   border: 2px solid var(--main-color);
   background-color: var(--bg-color);
-  box-shadow: 4px 4px var(--main-color);
   font-size: 15px;
   font-weight: 600;
   color: var(--font-color);
@@ -211,9 +207,13 @@
   border-radius: 5px;
   border: 2px solid var(--main-color);
   background-color: var(--bg-color);
-  box-shadow: 4px 4px var(--main-color);
   font-size: 17px;
   font-weight: 600;
   color: var(--font-color);
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
 } 
+
+.flip-card__btn:hover{
+  transform: scale(0.9);
+}

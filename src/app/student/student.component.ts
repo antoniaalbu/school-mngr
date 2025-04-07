@@ -6,6 +6,8 @@ import { selectCourses, selectLoading, selectError } from './store/student.selec
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { StudentService } from '../services/student.service'; 
+import { Course } from '../teacher/models/teacher.state';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-student',
@@ -30,7 +32,8 @@ export class StudentComponent implements OnInit {
   constructor(
     private store: Store,
     private authService: AuthService,
-    private studentService: StudentService
+    private studentService: StudentService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -124,12 +127,23 @@ export class StudentComponent implements OnInit {
       this.availableCourses$ = this.studentService.getAvailableCourses(this.userId);
     }
   }
+
+  onLogout() {
+    this.authService.logout().then(() => {
+      this.router.navigate(['/']); 
+    });
+  }
+
   
-  enrollInCourse(courseId: string) {
+  enrollInCourse(courseDocId: string) {
+    console.log('Course ID received:', courseDocId);  // Log the courseDocId received
+    
+    // Ensure that the userId exists before proceeding with enrollment
     if (this.userId) {
-      this.studentService.enrollInCourse(this.userId, courseId).subscribe({
+      // Pass the courseDocId to the service method
+      this.studentService.enrollInCourse(this.userId, courseDocId).subscribe({
         next: () => {
-          console.log('Successfully enrolled in course:', courseId);
+          console.log('Successfully enrolled in course with ID:', courseDocId);
           // Refresh both course lists
           this.loadAvailableCourses();
           if (this.userId) {
@@ -142,8 +156,15 @@ export class StudentComponent implements OnInit {
           console.error('Error enrolling in course:', err);
         }
       });
+    } else {
+      console.error('No user ID found');
     }
   }
+  
+  
+  
+  
+  
   
   unenrollFromCourse(courseId: string) {
     if (this.userId) {

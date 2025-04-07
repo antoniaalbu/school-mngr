@@ -17,7 +17,45 @@
   justify-content: center; /* Align profile and student list at the top */
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   height: 100vh;
+  position: relative;
 }
+
+
+.logout-btn {
+  position: absolute;
+  bottom: 20px; /* 20px from the bottom */
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+  width: 40%; /* Adjust the width as needed */
+  padding: 12px 24px; /* Add padding for a larger button */
+  background-color: #dc3545; /* Red background to signify logout */
+  color: white; /* White text color */
+  font-size: 16px; /* Text size */
+  font-weight: bold; /* Make the text bold */
+  border: none; /* Remove default border */
+  border-radius: 30px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Light shadow for depth */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: all 0.3s ease; /* Smooth transition effect */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase; /* Uppercase text */
+}
+
+/* Hover effect for logout button */
+.logout-btn:hover {
+  background-color: #c82333; /* Darker red when hovered */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+  transform: translateX(-50%) scale(1.05); /* Slight scale-up effect */
+}
+
+/* Active effect when the button is clicked */
+.logout-btn:active {
+  transform: translateX(-50%) scale(0.95); /* Slight scale-down effect when clicked */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Reset shadow */
+}
+
 
 .circle-image-container {
   width: 200px;

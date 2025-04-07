@@ -1,1 +1,226 @@
-<p>principal works!</p>
+<div class="dashboard-container">
+    <div class="sidebar">
+        <div class="sidebar-header"></div>
+
+        <!-- Profile Section -->
+        <div class="profile">
+            <div class="profile-img"></div>
+            <h2>Welcome, {{username}}</h2>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <div class="sidebar-nav">
+            <button class="animated-button" [class.active]="activeSection === 'courses'" (click)="activeSection = 'courses'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+                    <path
+                      d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                </svg>
+                <span class="text">Manage Courses</span>
+                <span class="circle"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+                    <path
+                      d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                </svg>
+            </button>
+            <button class="animated-button" [class.active]="activeSection === 'teachers'" (click)="activeSection = 'teachers'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+                    <path
+                      d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                </svg>
+                <span class="text">Manage Teachers</span>
+                <span class="circle"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+                    <path
+                      d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                </svg>
+            </button>
+            <button class="logout-btn" (click)="onLogout()">Logout</button>
+        </div>
+        
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+       
+        <div *ngIf="successMessage" class="success-message">
+            {{ successMessage }}
+        </div>
+    <!-- Section to show Add Course and Manage Courses buttons -->
+<div class="manage-options" *ngIf="activeSection !== 'courses' && activeSection !== 'addCourse' && activeSection !== 'teachers'">
+    <button class="manage-option-btn" (click)="activeSection = 'addCourse'">
+        
+        <div class="option-icon">➕</div>
+        <h3>Add Course</h3>
+        <p>Add a new course to the system</p>
+       
+    </button>
+    
+    <button class="manage-option-btn" (click)="activeSection = 'courses'">
+       
+        <div class="option-icon">📚</div>
+        <h3>Manage Courses</h3>
+        <p>View and manage all courses</p>
+       
+    </button>
+</div>
+
+
+        <!-- Back Button for Add Course Section -->
+        <div *ngIf="activeSection === 'addCourse'" class="back-button-container">
+            <button class="back-btn" (click)="activeSection = ''">
+                <svg height="16" width="16" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024"><path d="M874.690416 495.52477c0 11.2973-9.168824 20.466124-20.466124 20.466124l-604.773963 0 188.083679 188.083679c7.992021 7.992021 7.992021 20.947078 0 28.939099-4.001127 3.990894-9.240455 5.996574-14.46955 5.996574-5.239328 0-10.478655-1.995447-14.479783-5.996574l-223.00912-223.00912c-3.837398-3.837398-5.996574-9.046027-5.996574-14.46955 0-5.433756 2.159176-10.632151 5.996574-14.46955l223.019353-223.029586c7.992021-7.992021 20.957311-7.992021 28.949332 0 7.992021 8.002254 7.992021 20.957311 0 28.949332l-188.073446 188.073446 604.753497 0C865.521592 475.058646 874.690416 484.217237 874.690416 495.52477z"></path></svg>
+  <span>Back</span>
+            </button>
+        </div>
+
+        <!-- Add Course Section -->
+        <div *ngIf="activeSection === 'addCourse'" class="card">
+            <div class="section-header">
+                <h2 class="section-title">Add a New Course</h2>
+            </div>
+            <div class="form-group">
+                <input type="text" [(ngModel)]="newCourseName" class="input" placeholder="Enter new course name" />
+            </div>
+            <div class="form-group">
+                <button class="animated-button" (click)="onAddCourse()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+                        <path
+                          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                    </svg>
+                    <span class="text">Add Course</span>
+                    <span class="circle"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+                        <path
+                          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Back Button for Course List -->
+        <div *ngIf="activeSection === 'courses'" class="back-button-container">
+            <button class="back-btn" (click)="activeSection = ''">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+                Back
+            </button>
+        </div>
+
+        <!-- Course List with Edit/Delete Buttons -->
+        <div *ngIf="activeSection === 'courses' && (courses$ | async) as courses" class="card">
+            <div class="section-header">
+                <h2 class="section-title">Course List</h2>
+            </div>
+            <ul class="course-items">
+                <li *ngFor="let course of courses" class="p-2">
+                    <div class="course-item">
+                        <div class="course-name">{{ course.name }}</div>
+                        <div class="course-actions">
+                            <button class="edit-btn" (click)="openEditPopup(course)"> 
+                                <span class="circle1"></span>
+                                <span class="circle2"></span>
+                                <span class="circle3"></span>
+                                <span class="circle4"></span>
+                                <span class="circle5"></span>
+                                <span class="text">Edit</span>
+                            </button>
+                            
+                            
+                            <button aria-label="Delete item" class="delete-button" (click)="onDeleteCourse(course.courseId)">
+                                <svg
+                                  class="trash-svg"
+                                  viewBox="0 -10 64 74"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <g id="trash-can">
+                                    <rect
+                                      x="16"
+                                      y="24"
+                                      width="32"
+                                      height="30"
+                                      rx="3"
+                                      ry="3"
+                                      fill="#e74c3c"
+                                    ></rect>
+                              
+                                    <g transform-origin="12 18" id="lid-group">
+                                      <rect
+                                        x="12"
+                                        y="12"
+                                        width="40"
+                                        height="6"
+                                        rx="2"
+                                        ry="2"
+                                        fill="#c0392b"
+                                      ></rect>
+                                      <rect
+                                        x="26"
+                                        y="8"
+                                        width="12"
+                                        height="4"
+                                        rx="2"
+                                        ry="2"
+                                        fill="#c0392b"
+                                      ></rect>
+                                    </g>
+                                  </g>
+                                </svg>
+                              </button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+            <!-- Edit Course Popup Modal -->
+        <div *ngIf="isEditing" class="popup-overlay">
+            <div class="popup-container">
+                <div class="popup-content">
+                    <h3>Edit Course</h3>
+                    <input type="text" [(ngModel)]="editingCourse.name" class="input" placeholder="Enter new course name" />
+                    <button class="save-btn" (click)="onUpdateCourse()">Save Changes</button>
+                    <button class="close-btn" (click)="closeEditPopup()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Teachers Section -->
+        <div *ngIf="activeSection === 'teachers'" class="card">
+            <div class="section-header">
+                <h2 class="section-title">Assign Teacher to Course</h2>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Select Course</label>
+                <select [(ngModel)]="selectedCourseId" class="input">
+                    <option *ngFor="let course of courses$ | async" [value]="course.courseId">{{ course.name }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Select Teacher</label>
+                <select [(ngModel)]="selectedTeacherId" class="input">
+                    <option *ngFor="let teacher of teachers$ | async" [value]="teacher.teacherId">
+                        {{ teacher.name }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button class="animated-button" (click)="onAssignTeacher()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+                        <path
+                          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                    </svg>
+                    <span class="text">Assign Teacher</span>
+                    <span class="circle"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+                        <path
+                          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

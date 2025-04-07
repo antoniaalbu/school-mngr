@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Student, Course } from './models/teacher.state';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-teacher',
@@ -28,7 +29,8 @@ export class TeacherComponent implements OnInit {
 
   constructor(
     private teacherService: TeacherService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -109,4 +111,10 @@ export class TeacherComponent implements OnInit {
     return courseName;
   }
   
+  onLogout() {
+    this.authService.logout().then(() => {
+      this.router.navigate(['/']); 
+    });
+  }
+
 }

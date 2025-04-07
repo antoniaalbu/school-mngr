@@ -17,6 +17,10 @@ import { teacherReducer } from './app/teacher/store/teacher.reducer';
 import { FirestoreSeeder } from './app/utils/firestore-seeder';
 import { provideEffects } from '@ngrx/effects';
 import { TeacherEffects } from './app/teacher/store/teacher.effects';
+import { CourseEffects } from './app/principal/store/course.effects';
+import { courseReducer } from './app/principal/reducer/course.reducer';
+import { teacherPrinicipalReducer } from './app/principal/reducer/teacher.reducer';
+import { TeacherPrincipalEffects } from './app/principal/store/teacher.effects';
 
 const routes: Routes = [
   { path: 'student', component: StudentComponent },
@@ -43,8 +47,10 @@ bootstrapApplication(AppComponent, {
       
       return firestore;
     }),
-    provideStore({ student: studentReducer , teacher: teacherReducer}),
-    provideEffects(TeacherEffects)
+    provideStore({ student: studentReducer , teacher: teacherReducer, courses: courseReducer, teachers: teacherPrinicipalReducer}),
+    provideEffects(TeacherEffects),
+    provideEffects(CourseEffects),
+    provideEffects(TeacherPrincipalEffects)
     
   ]
 }).catch(err => console.error(err));

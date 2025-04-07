@@ -14,7 +14,7 @@ export interface Student {
     teacherId: string;
   }
   
-  export interface TeacherState {
+  export interface Teacher {
     teacher: { id: string, name: string } | null; 
     students: Student[];  
     courses: Course[];    

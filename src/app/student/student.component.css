@@ -14,11 +14,45 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  color: rgb(255, 255, 255);
+  position: relative; 
 }
+
+.logout-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  padding: 12px 24px;
+  background-color: #dc3545; 
+  color: white; 
+  font-size: 16px; 
+  font-weight: bold;
+  border: none; 
+  border-radius: 30px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase; 
+}
+
+
+.logout-btn:hover {
+  background-color: #c82333; 
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); 
+  transform: translateX(-50%) scale(1.05); 
+}
+
+
+.logout-btn:active {
+  transform: translateX(-50%) scale(0.95); 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+}
+
 
 .profile {
   text-align: center;
@@ -121,46 +155,54 @@
   opacity: 1;
 }
 
+h2{
+  margin-top: 20px;
+}
 
 .main-content {
   flex: 1;
   padding: 30px;
   display: flex;
-  flex-direction: row; /* Keep them side by side */
-  justify-content: space-between; /* Space out content between course list and grade section */
-  gap: 30px; /* Add some space between the two */
-  height: auto; /* Automatically adjust the height based on content */
-  overflow: hidden;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 30px; 
+  height: 100%; 
+  max-height: 100vh; 
+  overflow-y: auto; overflow-x: hidden;
 }
 
 
 @keyframes slideIn {
   from {
-    transform: translateX(100%); /* Start from off-screen to the right */
-    opacity: 0; /* Start with transparent */
+    transform: translateX(100%);
+    opacity: 0; 
   }
   to {
-    transform: translateX(0); /* End at the normal position */
-    opacity: 1; /* Fully visible */
+    transform: translateX(0); 
+    opacity: 1; 
   }
 }
 
 .course-list, .grades-section {
-  width: 100%; /* Ensure they take full width available */
+  width: 100%; 
   animation: slideIn 1s ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Stack items on top of each other */
+  justify-content: center; 
   text-align: center;
-  height: auto;  /* Automatically adjust height */
-  min-height: none;  /* Ensure no max-height restrictions */
-  margin-top: 20px; /* Add space on top */
+  height: auto;  
+  min-height: none;  
+  margin-top: 20px;
 
 }
 
+.course-list{
+  overflow: auto;
+}
+
 .grades-section{
-  background-color: #cfe9ff;
+  background-color: #ffffff;
 }
 
 .course-list ul, .grade-list {
@@ -244,11 +286,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #41ab46; /* Dark green */
+  background: #41ab46; 
   color: white;
   font-size: 18px;
   font-weight: bold;
-  border-radius: 10px; /* Slightly rounded edges */
+  border-radius: 10px; 
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
   animation: zoomIn 0.8s ease-out; 
@@ -256,7 +298,7 @@
 
 .grade-list li:hover {
   transform: scale(1.1);
-  background: #1b5e20; /* Darker green on hover */
+  background: #1b5e20; 
 }
 
 
@@ -269,14 +311,14 @@
   flex-direction: row;
   gap: 20px;
   width: 100%;
-  height: 87%; /* Take full height */
-  align-items: stretch; /* Ensure child elements stretch */
+  height: 87%; 
+  align-items: stretch;
   justify-content: center;
 }
 
 .manage-option-btn {
   width: 100%;
-  height: 100%; /* Full height */
+  height: 100%; 
   padding: 30px;
   text-align: left;
   background-color: #cfe9ff;
@@ -287,7 +329,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Center content */
+  justify-content: center; 
   animation: zoomIn 0.3s ease-in-out;
   background-size: cover;
 }
@@ -315,7 +357,6 @@
   color: #6c757d;
 }
 
-/* View Container */
 .manage-view-container {
   width: 100%;
 }
@@ -361,8 +402,8 @@
 }
 
 .course-list li {
-  width: 80%; /* Ensures all items have the same width */
-  max-width: 500px; /* Prevents them from being too large */
+  width: 80%; 
+  max-width: 500px; 
   padding: 20px;
   margin: 10px 0;
   border-radius: 30px;
@@ -395,7 +436,7 @@
   margin-right: 20px;
 }
 
-/* Enroll/Unenroll buttons */
+
 .enroll-btn, .unenroll-btn {
   padding: 8px 16px;
   border-radius: 4px;
@@ -424,14 +465,14 @@
 }
 
 
-/* Course management section */
+
 .course-management h2 {
   margin-bottom: 30px;
   font-size: 24px;
   font-weight: 600;
 }
 
-/* No courses messages */
+
 .no-courses {
   padding: 30px;
   text-align: center;
