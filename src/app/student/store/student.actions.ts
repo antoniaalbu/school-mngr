@@ -15,3 +15,8 @@ export const loadStudentCoursesFailure = createAction(
   '[Student] Load Courses Failure',
   props<{ error: string }>()
 );
+
+export const enrollInCourse = createAction(
+  '[Student] Enroll in Course',
+  props<{ studentId: string, courseId: string }>()
+);

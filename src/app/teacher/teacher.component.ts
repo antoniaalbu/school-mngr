@@ -6,6 +6,8 @@ import { Student, Course } from './models/teacher.state';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { updateGrade, deleteGrade } from './store/teacher.actions';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-teacher',
@@ -23,14 +25,19 @@ export class TeacherComponent implements OnInit {
   studentGrades: { courseId: string; courseName: string; grade: number }[] = [];
   showAssignGradeForm: boolean = false;
   teacherId: string = '';
-  teacherName: string = ''; // To hold the teacher's name
-  showAssignedStudents: boolean = false; // Controls visibility of assigned students
+  teacherName: string = '';
+  showAssignedStudents: boolean = false;
   username: string | undefined;
+  filteredCourses: Course[] = [];
+  editingGrade: boolean = false; // Track if a grade is being edited
+
+
 
   constructor(
     private teacherService: TeacherService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) {}
 
   ngOnInit(): void {
@@ -66,8 +73,19 @@ export class TeacherComponent implements OnInit {
     this.selectedCourse = '';
     this.newGrade = null;
     this.showAssignGradeForm = false;
+    this.filteredCourses = [];
+  
     this.fetchGrades(student.id);
+  
+    this.teacherCourses$.subscribe((courses) => {
+      const enrolledCourseIds = Object.keys(student.grades || {});
+  
+      this.filteredCourses = courses.filter(course =>
+        enrolledCourseIds.includes(course.id)
+      );
+    });
   }
+  
 
   fetchGrades(studentId: string): void {
     this.teacherService.getStudentGrades(studentId, this.teacherId).subscribe({
@@ -77,6 +95,8 @@ export class TeacherComponent implements OnInit {
       error: (err) => console.error('Error fetching grades:', err),
     });
   }
+  
+
   
 
   submitGrade(): void {
@@ -110,6 +130,40 @@ export class TeacherComponent implements OnInit {
     });
     return courseName;
   }
+
+  updateGrade(courseId: string, newGrade: number | null): void {
+    // Make sure newGrade is a valid number
+    if (newGrade !== null && newGrade !== undefined) {
+      this.teacherService.updateGrade(this.selectedStudent!.id, courseId, newGrade)
+        .subscribe({
+          next: () => {
+            console.log('Grade updated successfully');
+            this.fetchGrades(this.selectedStudent!.id);
+          },
+          error: (err) => console.error('Error updating grade:', err)
+        });
+    } else {
+      alert('Please enter a valid grade.');
+    }
+  }
+  
+
+  // Method to delete a grade
+  deleteGrade(courseId: string): void {
+    if (this.selectedStudent) {
+      this.store.dispatch(deleteGrade({
+        studentId: this.selectedStudent.id,
+        courseId
+      }));
+
+      // Optionally, delete the grade from the server
+      this.teacherService.deleteGradeFromServer(this.selectedStudent.id, courseId).subscribe({
+        next: () => console.log('Grade deleted successfully'),
+        error: (err) => console.error('Error deleting grade:', err),
+      });
+    }
+  }
+
   
   onLogout() {
     this.authService.logout().then(() => {

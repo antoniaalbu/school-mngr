@@ -236,7 +236,7 @@
   margin: 0;
 }
 
-.students-list li, .grades-container li{
+.students-list li{
   margin-top: 20px;
   position: relative;
   display: flex;
@@ -279,9 +279,22 @@
 
 
 
+.grades-container {
+  background: #ffffffdd;
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 30px 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 50%;
+  animation: slide-in 0.5s ease-out forwards;
+  transition: all 0.3s ease-in-out;
+}
+
 .grades-container h3 {
-  font-size: 1.5em;
-  margin-bottom: 10px;
+  font-size: 1.75em;
+  margin-bottom: 20px;
+  color: #1f387e;
+  font-weight: 700;
 }
 
 .grades-container ul {
@@ -289,6 +302,27 @@
   padding: 0;
   margin: 0;
 }
+
+.grades-container li {
+  background-color: #f1f8ff;
+  border: 1px solid #b6daf9;
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  color: #1f1f1f;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.grades-container li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #e5f3ff;
+}
+
 
 .button-group {
   display: flex;
@@ -325,27 +359,16 @@
 }
 
 .assign-grade {
-  color: #333;
-  background-color: #f7f7f7;
-  text-decoration: none;
-  font-weight: normal;
-  padding: 20px 30px;
-  display: block;
-  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
-  font-weight: 600;
-  width: 100%;
-  margin-top: 20px;
-  
-  /* Initial state for the slide-in effect */
-  opacity: 0;
-  transform: translateY(-30px); /* Use translateY for a more subtle slide-in */
+  background: #ffffffee;
+  backdrop-filter: blur(6px);
   border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
-  background-color: #ffffff;
-  
-  /* Apply the slide-in effect when the element becomes visible */
+  padding: 30px 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  width: 50%;
+  display: none;
   animation: slide-in 0.5s ease-out forwards;
-  display: none; /* Hidden by default */
+  transition: all 0.3s ease-in-out;
 }
 
 .assign-grade.active {
@@ -353,33 +376,30 @@
 }
 
 .assign-grade label {
-  font-size: 1.1em;
-  color: #1f387e; /* Lighter color for the label text */
+  display: block;
+  margin-bottom: 10px;
   font-weight: 600;
-  margin-bottom: 12px;
-  display: block;
+  color: #1f387e;
 }
 
-.assign-grade input, .assign-grade select {
+.assign-grade input,
+.assign-grade select {
   width: 100%;
-  color: #333;
-  background-color: #f9f9f9;
-  font-weight: normal;
-  padding: 12px 20px;
-  display: block;
-  border: 1px solid #b6daf9;
-  border-radius: 15px;
-  transition: all 0.3s ease-in-out;
-  font-size: 1em;
+  padding: 12px 16px;
   margin-bottom: 20px;
-  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  font-size: 1rem;
+  color: #333;
+  transition: border-color 0.3s ease;
 }
 
-/* Input/Select focus effect */
-.assign-grade input:focus, .assign-grade select:focus {
-  border-color: #1f387e;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+.assign-grade input:focus,
+.assign-grade select:focus {
   outline: none;
+  border-color: #1f387e;
+  box-shadow: 0 0 0 3px #b6daf9;
 }
 
 .students-container{

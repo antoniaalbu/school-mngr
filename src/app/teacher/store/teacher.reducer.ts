@@ -12,7 +12,9 @@ import {
   assignGrade,
   addCourse,
   addCourseSuccess,
-  addCourseFailure
+  addCourseFailure,
+  updateGrade,
+  deleteGrade
 } from './teacher.actions';
 
 export const initialState: Teacher = {
@@ -86,5 +88,33 @@ export const teacherReducer = createReducer(
     ...state,
     loading: false,
     error
-  }))
+  })),
+  on(updateGrade, (state, { studentId, courseId, grade }) => {
+    const updatedStudents = state.students.map(student => {
+      if (student.id === studentId) {
+        const updatedGrades = { ...student.grades, [courseId]: grade };
+        return { ...student, grades: updatedGrades };
+      }
+      return student;
+    });
+    return {
+      ...state,
+      students: updatedStudents,
+    };
+  }),
+
+  // Delete Grade
+  on(deleteGrade, (state, { studentId, courseId }) => {
+    const updatedStudents = state.students.map(student => {
+      if (student.id === studentId) {
+        const { [courseId]: _, ...updatedGrades } = student.grades; // Remove the grade for the given courseId
+        return { ...student, grades: updatedGrades };
+      }
+      return student;
+    });
+    return {
+      ...state,
+      students: updatedStudents,
+    };
+  })
 );

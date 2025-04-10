@@ -72,3 +72,8 @@ export const updateGradeFailure = createAction(
   '[Teacher] Update Grade Failure',
   props<{ error: string }>()
 );
+
+export const deleteGrade = createAction(
+  '[Teacher] Delete Grade',
+  props<{ studentId: string, courseId: string }>()
+);

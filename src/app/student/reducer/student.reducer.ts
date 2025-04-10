@@ -24,5 +24,17 @@ export const studentReducer = createReducer(
     loading: false,
     error: error,
     courses: []
+  })),
+  on(loadStudentCoursesSuccess, (state, { courses }) => ({
+    ...state,
+    courses, // Update the courses in the store
+    loading: false,
+    error: null,
+  })),
+  on(loadStudentCoursesFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error, // Set the error state
   }))
+
 );

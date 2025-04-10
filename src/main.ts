@@ -21,6 +21,7 @@ import { CourseEffects } from './app/principal/store/course.effects';
 import { courseReducer } from './app/principal/reducer/course.reducer';
 import { teacherPrinicipalReducer } from './app/principal/reducer/teacher.reducer';
 import { TeacherPrincipalEffects } from './app/principal/store/teacher.effects';
+import { StudentEffects } from './app/student/store/student.effects';
 
 const routes: Routes = [
   { path: 'student', component: StudentComponent },
@@ -50,6 +51,7 @@ bootstrapApplication(AppComponent, {
     provideStore({ student: studentReducer , teacher: teacherReducer, courses: courseReducer, teachers: teacherPrinicipalReducer}),
     provideEffects(TeacherEffects),
     provideEffects(CourseEffects),
+    provideEffects(StudentEffects),
     provideEffects(TeacherPrincipalEffects)
     
   ]
