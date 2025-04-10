@@ -241,22 +241,23 @@ export class TeacherService {
   deleteGradeFromServer(studentId: string, courseId: string): Observable<void> {
     return new Observable((observer) => {
       const studentRef = doc(this.firestore, `students/${studentId}`);
-
-      // Fetch the student document to delete the grade
+  
       getDoc(studentRef).then((studentDoc) => {
         if (studentDoc.exists()) {
           const studentData = studentDoc.data();
-          const { [courseId]: removedGrade, ...updatedGrades } = studentData?.['grades'] || {};
-
-          // Remove the grade for the course
-          updateDoc(studentRef, { grades: updatedGrades })
+          const grades = studentData?.['grades'] || {};
+  
+          // Set the grade to null instead of removing the whole key
+          grades[courseId] = null;
+  
+          updateDoc(studentRef, { grades })
             .then(() => {
               observer.next();
               observer.complete();
             })
             .catch((err) => {
-              console.error('Error deleting grade:', err);
-              observer.error('Error deleting grade');
+              console.error('Error clearing grade:', err);
+              observer.error('Error clearing grade');
             });
         } else {
           observer.error('Student not found');
@@ -267,7 +268,6 @@ export class TeacherService {
       });
     });
   }
-
   
   
 }

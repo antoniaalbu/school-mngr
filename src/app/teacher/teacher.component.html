@@ -9,7 +9,7 @@
     </div>
     <div class="user-info">
       <div class="user-name">
-        <h2>Welcome</h2>
+        <h2>Welcome, {{username}}</h2>
       </div>
     
         <button class="animated-button" (click)="toggleAssignedStudents()">
@@ -41,7 +41,18 @@
         </ul>
       </div>
       <div class="button-group">
-        <button class="animated-button" (click)="toggleAssignedStudents()">Hide students</button>
+        <button class="animated-button" (click)="toggleAssignedStudents()"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+          <path
+            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+          ></path>
+        </svg>
+        <span class="text">Hide Students</span>
+        <span class="circle"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+          <path
+            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+          ></path>
+        </svg></button>
       </div>
     </div>
   </div>
@@ -51,13 +62,34 @@
       <h3>Grades for {{ selectedStudent.name }}</h3>
       <ul class="list-style">
         <li *ngFor="let grade of studentGrades">
-          <span>Course: {{ grade.courseName }} - Grade: {{ grade.grade }}</span>
-          <button class="edit-button" (click)="updateGrade(grade.courseId, newGrade)">Edit</button>
-          <button class="delete-button" (click)="deleteGrade(grade.courseId)">Delete</button>
+          <div *ngIf="editingGradeId !== grade.courseId">
+            <span>Course: {{ grade.courseName }} - Grade: {{ grade.grade }}</span>
+            <button class="edit-button" (click)="startEditing(grade)">Edit</button>
+            <button class="delete-button" (click)="deleteGrade(grade.courseId)">Delete</button>
+          </div>
+      
+          <div *ngIf="editingGradeId === grade.courseId">
+            <span>Course: {{ grade.courseName }} -</span>
+            <input type="number" [(ngModel)]="editableGrade" min="0" max="100" />
+            <button class="save-button" (click)="saveUpdatedGrade(grade.courseId)">Save</button>
+            <button class="cancel-button" (click)="cancelEdit()">Cancel</button>
+          </div>
         </li>
       </ul>
+      
 
-      <button class="animated-button" (click)="showAssignGradeForm = true">+ Add grade</button>
+      <button class="animated-button" (click)="showAssignGradeForm = true"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+        <path
+          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+        ></path>
+      </svg>
+      <span class="text">+ Add Grade</span>
+      <span class="circle"></span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+        <path
+          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+        ></path>
+      </svg></button>
     </div>
 
     <div [ngClass]="{'assign-grade': true, 'active': showAssignGradeForm}">
@@ -74,8 +106,30 @@
         <label for="grade">Enter Grade:</label>
         <input type="number" id="grade" [(ngModel)]="newGrade" min="0" max="100" />
         <div class="button-group">
-          <button class="animated-button" (click)="submitGrade()">Save Grade</button>
-          <button class="animated-button" (click)="showAssignGradeForm = false">Cancel</button>
+          <button class="animated-button" (click)="submitGrade()"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg>
+          <span class="text">Save Grade</span>
+          <span class="circle"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg></button>
+          <button class="animated-button" (click)="showAssignGradeForm = false"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg>
+          <span class="text">Cancel</span>
+          <span class="circle"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+            <path
+              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+            ></path>
+          </svg></button>
         </div>
       </div>
     </div>
