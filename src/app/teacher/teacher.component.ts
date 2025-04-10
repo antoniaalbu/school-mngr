@@ -29,7 +29,9 @@ export class TeacherComponent implements OnInit {
   showAssignedStudents: boolean = false;
   username: string | undefined;
   filteredCourses: Course[] = [];
-  editingGrade: boolean = false; // Track if a grade is being edited
+  editingGrade: boolean = false;
+  editingGradeId: string | null = null;
+  editableGrade: number | null = null;
 
 
 
@@ -148,21 +150,55 @@ export class TeacherComponent implements OnInit {
   }
   
 
-  // Method to delete a grade
   deleteGrade(courseId: string): void {
     if (this.selectedStudent) {
       this.store.dispatch(deleteGrade({
         studentId: this.selectedStudent.id,
         courseId
       }));
-
-      // Optionally, delete the grade from the server
+  
       this.teacherService.deleteGradeFromServer(this.selectedStudent.id, courseId).subscribe({
-        next: () => console.log('Grade deleted successfully'),
+        next: () => {
+          console.log('Grade deleted successfully');
+          // ✅ Re-fetch grades here to refresh the list
+          this.fetchGrades(this.selectedStudent!.id);
+        },
         error: (err) => console.error('Error deleting grade:', err),
       });
     }
   }
+  
+  startEditing(grade: { courseId: string; grade: number }): void {
+    this.editingGradeId = grade.courseId;
+    this.editableGrade = grade.grade;
+  }
+  
+  // Cancel editing
+  cancelEdit(): void {
+    this.editingGradeId = null;
+    this.editableGrade = null;
+  }
+  
+  // Save the updated grade
+  saveUpdatedGrade(courseId: string): void {
+    if (this.editableGrade === null || this.editableGrade < 0 || this.editableGrade > 100) {
+      alert('Please enter a valid grade between 0 and 100.');
+      return;
+    }
+  
+    if (this.selectedStudent) {
+      this.teacherService.updateGrade(this.selectedStudent.id, courseId, this.editableGrade)
+        .subscribe({
+          next: () => {
+            console.log('Grade updated successfully');
+            this.fetchGrades(this.selectedStudent!.id);
+            this.cancelEdit();
+          },
+          error: (err) => console.error('Error updating grade:', err)
+        });
+    }
+  }
+  
 
   
   onLogout() {
