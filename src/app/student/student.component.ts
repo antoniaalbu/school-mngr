@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { loadStudentCourses, loadStudentCoursesSuccess, loadStudentCoursesFailure } from './store/student.actions';
+import { loadStudentCourses, loadStudentCoursesSuccess, loadStudentCoursesFailure, enrollInCourse } from './store/student.actions';
 import { selectCourses, selectLoading, selectError } from './store/student.selector';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { StudentService } from '../services/student.service'; 
+import { StudentService } from './store/student.service'; 
 import { Course } from '../teacher/models/teacher.state';
 import { Router } from '@angular/router';
 
@@ -26,7 +26,7 @@ export class StudentComponent implements OnInit {
   username: string | undefined;
   activeButton: string = '';
   selectedCourse: any = null;
-  manageView: string = ''; // Empty string means no specific manage view is selected
+  manageView: string = '';
   userId: string | null = null;
 
   constructor(
@@ -49,7 +49,7 @@ export class StudentComponent implements OnInit {
           console.log('Current User ID:', currentUser.uid);
           this.userId = currentUser.uid;
           
-          // Load student courses
+       
           this.store.dispatch(loadStudentCourses({ studentId: currentUser.uid }));
           
           this.studentService.getCourses(currentUser.uid).subscribe({
@@ -63,12 +63,12 @@ export class StudentComponent implements OnInit {
             }
           });
 
-          // Set up selectors
+      
           this.courses$ = this.store.select(selectCourses);
           this.loading$ = this.store.select(selectLoading);
           this.error$ = this.store.select(selectError);
           
-          // Debug subscriptions
+       
           this.courses$.subscribe(courses => {
             console.log('Courses from the store selector:', courses);
           });
@@ -102,7 +102,7 @@ export class StudentComponent implements OnInit {
     this.activeView = button;
     console.log('Button pressed:', button);
     
-    // Clear any selected manage view when changing main view
+    
     if (button === 'manageCourses') {
       this.manageView = '';
     }
@@ -118,7 +118,6 @@ export class StudentComponent implements OnInit {
   }
   
   clearManageView() {
-    // Go back to the manage options view
     this.manageView = '';
   }
   
@@ -135,43 +134,21 @@ export class StudentComponent implements OnInit {
   }
 
   
-  enrollInCourse(courseDocId: string) {
-    console.log('Course ID received:', courseDocId);  // Log the courseDocId received
-    
-    // Ensure that the userId exists before proceeding with enrollment
+  enrollInCourse(courseId: string): void {
     if (this.userId) {
-      // Pass the courseDocId to the service method
-      this.studentService.enrollInCourse(this.userId, courseDocId).subscribe({
-        next: () => {
-          console.log('Successfully enrolled in course with ID:', courseDocId);
-          // Refresh both course lists
-          this.loadAvailableCourses();
-          if (this.userId) {
-            this.studentService.getCourses(this.userId).subscribe(courses => {
-              this.store.dispatch(loadStudentCoursesSuccess({ courses }));
-            });
-          }
-        },
-        error: (err) => {
-          console.error('Error enrolling in course:', err);
-        }
-      });
-    } else {
-      console.error('No user ID found');
+      this.store.dispatch(enrollInCourse({ studentId: this.userId, courseId }));
     }
   }
   
   
   
-  
-  
-  
+
   unenrollFromCourse(courseId: string) {
     if (this.userId) {
       this.studentService.unenrollFromCourse(this.userId, courseId).subscribe({
         next: () => {
           console.log('Successfully unenrolled from course:', courseId);
-          // Refresh both course lists
+
           this.loadAvailableCourses();
           if (this.userId) {
             this.studentService.getCourses(this.userId).subscribe(courses => {

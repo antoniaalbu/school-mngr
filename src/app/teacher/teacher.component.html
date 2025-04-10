@@ -1,8 +1,6 @@
 <div class="split-screen">
-  <!-- Split Screen Layout -->
   <div class="container"></div>
 
-  <!-- Left Side: User Profile Section -->
   <div class="user-profile" *ngIf="!showAssignedStudents">
     <div class="circle-image-container">
       <div class="circle-image">
@@ -29,113 +27,57 @@
           </svg>
         </button>
         <button class="logout-btn" (click)="onLogout()">Logout</button>
-      
     </div>
-
-   
   </div>
 
-  <!-- Left Side: Container with Assigned Students -->
   <div *ngIf="showAssignedStudents" class="students-container">
-    
-
     <div class="user-profile">
-    <!-- Students List Below User Profile -->
-    <div class="students-list">
-      <h3>Students Assigned to You:</h3>
-      <ul class="list-style">
-        <li *ngFor="let student of students$ | async" (click)="selectStudent(student)">
-          <span>{{ student.name }}</span>
-        </li>
-      </ul>
+      <div class="students-list">
+        <h3>Students Assigned to You:</h3>
+        <ul class="list-style">
+          <li *ngFor="let student of students$ | async" (click)="selectStudent(student)">
+            <span>{{ student.name }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="button-group">
+        <button class="animated-button" (click)="toggleAssignedStudents()">Hide students</button>
+      </div>
     </div>
-    <div class="button-group">
-      <button class="animated-button" (click)="toggleAssignedStudents()"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
-        <path
-          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-        ></path>
-      </svg>
-      <span class="text">Hide students</span>
-      <span class="circle"></span>
-      <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
-        <path
-          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-        ></path>
-      </svg></button>
-      
-    </div>
-  </div>
   </div>
 
-  <!-- Right Side: Content Section (Grades Form) -->
   <div class="content-container">
-    <!-- Grades List (Styled like Students List) -->
     <div class="grades-container" *ngIf="selectedStudent">
       <h3>Grades for {{ selectedStudent.name }}</h3>
       <ul class="list-style">
         <li *ngFor="let grade of studentGrades">
           <span>Course: {{ grade.courseName }} - Grade: {{ grade.grade }}</span>
+          <button class="edit-button" (click)="updateGrade(grade.courseId, newGrade)">Edit</button>
+          <button class="delete-button" (click)="deleteGrade(grade.courseId)">Delete</button>
         </li>
       </ul>
 
-      <!-- Add Grade Button -->
-      <button class="animated-button" (click)="showAssignGradeForm = true"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
-        <path
-          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-        ></path>
-      </svg>
-      <span class="text">+ Add grade</span>
-      <span class="circle"></span>
-      <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
-        <path
-          d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-        ></path>
-      </svg></button>
+      <button class="animated-button" (click)="showAssignGradeForm = true">+ Add grade</button>
     </div>
 
-    <!-- Assign Grade Form (Only Opens When 'Add Grade' is Clicked) -->
     <div [ngClass]="{'assign-grade': true, 'active': showAssignGradeForm}">
       <h3 *ngIf="selectedStudent">Assign Grade to {{ selectedStudent.name }}</h3>
 
-      <!-- Course selection -->
       <label for="course">Select Course:</label>
-      <select id="course" [(ngModel)]="selectedCourse">
-        <option *ngFor="let course of teacherCourses$ | async" [value]="course.id">
+      <select [(ngModel)]="selectedCourse">
+        <option *ngFor="let course of filteredCourses" [value]="course.id">
           {{ course.name }}
         </option>
       </select>
 
-      <!-- Grade input -->
       <div *ngIf="selectedCourse">
         <label for="grade">Enter Grade:</label>
         <input type="number" id="grade" [(ngModel)]="newGrade" min="0" max="100" />
         <div class="button-group">
-          <button class="animated-button" (click)="submitGrade()"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
-            <path
-              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-            ></path>
-          </svg>
-          <span class="text">Save Grade</span>
-          <span class="circle"></span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
-            <path
-              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-            ></path>
-          </svg></button>
-          <button class="animated-button" (click)="showAssignGradeForm = false"> <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
-            <path
-              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-            ></path>
-          </svg>
-          <span class="text">Cancel</span>
-          <span class="circle"></span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
-            <path
-              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-            ></path>
-          </svg></button>
+          <button class="animated-button" (click)="submitGrade()">Save Grade</button>
+          <button class="animated-button" (click)="showAssignGradeForm = false">Cancel</button>
         </div>
       </div>
     </div>
-  </div> <!-- End of content-container -->
-</div> <!-- End of split-screen -->
+  </div>
+</div>
