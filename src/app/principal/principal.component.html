@@ -34,6 +34,20 @@
                       d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
                 </svg>
             </button>
+            <button class="animated-button"
+            [class.active]="activeSection === 'logs'"
+            (click)="activeSection = 'logs'; fetchLogs()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="arr-2" viewBox="0 0 24 24">
+                    <path
+                      d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                </svg>
+                <span class="text">Inspect App Logs</span>
+                <span class="circle"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="arr-1" viewBox="0 0 24 24">
+                    <path
+                      d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
+                </svg>
+            </button>
             <button class="logout-btn" (click)="onLogout()">Logout</button>
         </div>
         
@@ -46,7 +60,8 @@
             {{ successMessage }}
         </div>
     <!-- Section to show Add Course and Manage Courses buttons -->
-<div class="manage-options" *ngIf="activeSection !== 'courses' && activeSection !== 'addCourse' && activeSection !== 'teachers'">
+    <div class="manage-options" *ngIf="activeSection !== 'courses' && activeSection !== 'addCourse' && activeSection !== 'teachers' && activeSection !== 'logs'">
+
     <button class="manage-option-btn" (click)="activeSection = 'addCourse'">
         
         <div class="option-icon">➕</div>
@@ -222,5 +237,34 @@
                 </button>
             </div>
         </div>
-    </div>
+
+        <div *ngIf="activeSection === 'logs'" class="card logs-section">
+            <div class="section-header">
+              <h2 class="section-title">Activity Logs</h2>
+            </div>
+          
+            <div *ngIf="logs.length === 0" class="empty-message">
+              No logs available.
+            </div>
+          
+            <ul class="log-list">
+              <li *ngFor="let log of logs" class="log-item">
+                <p><strong>User:</strong> {{ log.userId }}</p>
+                <p><strong>Action:</strong> {{ log.action }}</p>
+                <p><strong>Timestamp:</strong> {{ log.timestamp.toDate() | date: 'short' }}</p>
+                <div *ngIf="log.details" class="log-details">
+                  <strong>Details:</strong>
+                  <ul class="details-list">
+                    <li *ngFor="let key of objectKeys(log.details)">
+                      <span class="key">{{ key }}:</span>
+                      <span class="value">{{ log.details[key] }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+
 </div>

@@ -210,15 +210,28 @@ export class TeacherService {
   updateGradeInServer(studentId: string, courseId: string, grade: number): Observable<void> {
     return new Observable((observer) => {
       const studentRef = doc(this.firestore, `students/${studentId}`);
-
+  
       // Fetch the student document to update the grade
       getDoc(studentRef).then((studentDoc) => {
         if (studentDoc.exists()) {
           const studentData = studentDoc.data();
-          const updatedGrades = { ...studentData?.['grades'], [courseId]: grade };
-
-          // Update the student's grade for the course
-          updateDoc(studentRef, { grades: updatedGrades })
+          let grades = studentData?.['grades'] || [];
+  
+          // Check if the grade for the course already exists
+          const existingGradeIndex = grades.findIndex((entry: any) => entry.courseId === courseId);
+  
+          if (existingGradeIndex !== -1) {
+            // Update the existing grade entry
+            grades[existingGradeIndex] = { courseId, grade };
+            console.log(`Updated grade:`, { courseId, grade });  // Log updated grade
+          } else {
+            // Add a new grade entry to the array
+            grades.push({ courseId, grade });
+            console.log(`Added new grade:`, { courseId, grade });  // Log added grade
+          }
+  
+          // Update the grades array in Firestore
+          updateDoc(studentRef, { grades })
             .then(() => {
               observer.next();
               observer.complete();
@@ -236,7 +249,9 @@ export class TeacherService {
       });
     });
   }
-
+  
+  
+  
   // Delete the grade for a student in a specific course
   deleteGradeFromServer(studentId: string, courseId: string): Observable<void> {
     return new Observable((observer) => {
