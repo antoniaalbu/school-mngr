@@ -8,6 +8,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { updateGrade, deleteGrade } from './store/teacher.actions';
 import { Store } from '@ngrx/store';
+import { LogService } from '../logs/log.service';
+import { LogActionType } from '../logs/log-action-type.enum';
 
 @Component({
   selector: 'app-teacher',
@@ -39,7 +41,8 @@ export class TeacherComponent implements OnInit {
     private teacherService: TeacherService,
     private authService: AuthService,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private logService: LogService
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +52,8 @@ export class TeacherComponent implements OnInit {
           this.teacherId = currentUser.uid;
           this.students$ = this.teacherService.getStudents(this.teacherId);
           this.fetchTeacherCourses();
+
+          this.logService.logAction(this.teacherId, 'teacher', LogActionType.LOGIN, { username: this.username }); 
         }
       },
       error: (err) => console.error('Error fetching teacher data:', err),
@@ -64,10 +69,12 @@ export class TeacherComponent implements OnInit {
 
   fetchTeacherCourses(): void {
     this.teacherCourses$ = this.teacherService.getCourses(this.teacherId);
+    this.logService.logAction(this.teacherId, 'teacher', LogActionType.COURSE_ADDED, { teacherId: this.teacherId }); 
   }
 
   toggleAssignedStudents(): void {
     this.showAssignedStudents = !this.showAssignedStudents;
+    this.logService.logAction(this.teacherId, 'teacher', LogActionType.REDIRECT, { showAssigned: this.showAssignedStudents });
   }
 
   selectStudent(student: Student): void {
@@ -86,6 +93,8 @@ export class TeacherComponent implements OnInit {
         enrolledCourseIds.includes(course.id)
       );
     });
+
+     this.logService.logAction(this.teacherId, 'teacher', LogActionType.VIEW_STUDENT, { studentId: student.id, studentName: student.name });
   }
   
 
@@ -98,9 +107,6 @@ export class TeacherComponent implements OnInit {
     });
   }
   
-
-  
-
   submitGrade(): void {
     if (this.selectedStudent && this.selectedCourse && this.newGrade !== null) {
       const newGradeEntry = {
@@ -108,12 +114,18 @@ export class TeacherComponent implements OnInit {
         grade: this.newGrade,
         courseName: this.getCourseName(this.selectedCourse),
       };
-
-      this.teacherService.addGrade(this.selectedStudent.id, newGradeEntry)
+  
+      // Assertăm că selectedStudent nu va fi null
+      this.teacherService.addGrade((this.selectedStudent as Student).id, newGradeEntry)
         .subscribe({
           next: () => {
-            this.fetchGrades(this.selectedStudent!.id);
+            this.fetchGrades((this.selectedStudent as Student).id); // Assertăm că selectedStudent nu va fi null
             this.showAssignGradeForm = false;
+            this.logService.logAction(this.teacherId, 'teacher', LogActionType.COURSE_ENROLLED, {
+              studentId: (this.selectedStudent as Student).id,
+              courseId: this.selectedCourse,
+              grade: this.newGrade,
+            });
           },
           error: (err) => console.error('Error adding grade:', err),
         });
@@ -121,6 +133,9 @@ export class TeacherComponent implements OnInit {
       alert('Please select a course and enter a grade.');
     }
   }
+  
+  
+  
 
   getCourseName(courseId: string): string {
     let courseName = '';
@@ -150,24 +165,24 @@ export class TeacherComponent implements OnInit {
   }
   
 
-  deleteGrade(courseId: string): void {
-    if (this.selectedStudent) {
-      this.store.dispatch(deleteGrade({
-        studentId: this.selectedStudent.id,
-        courseId
-      }));
-  
-      this.teacherService.deleteGradeFromServer(this.selectedStudent.id, courseId).subscribe({
-        next: () => {
-          console.log('Grade deleted successfully');
-          // ✅ Re-fetch grades here to refresh the list
-          this.fetchGrades(this.selectedStudent!.id);
-        },
-        error: (err) => console.error('Error deleting grade:', err),
-      });
-    }
+ deleteGrade(courseId: string): void {
+  if (this.selectedStudent) {
+    this.store.dispatch(deleteGrade({
+      studentId: this.selectedStudent.id,
+      courseId
+    }));
+
+    this.teacherService.deleteGradeFromServer(this.selectedStudent.id, courseId).subscribe({
+      next: () => {
+        console.log('Grade deleted successfully');
+        // ✅ Re-fetch grades here to refresh the list
+        this.fetchGrades(this.selectedStudent!.id);
+      },
+      error: (err) => console.error('Error deleting grade:', err),
+    });
   }
-  
+}
+
   startEditing(grade: { courseId: string; grade: number }): void {
     this.editingGradeId = grade.courseId;
     this.editableGrade = grade.grade;

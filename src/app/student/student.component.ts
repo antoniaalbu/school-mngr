@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { StudentService } from './store/student.service'; 
 import { Course } from '../teacher/models/teacher.state';
 import { Router } from '@angular/router';
+import { LogService } from '../logs/log.service';
+import { LogActionType } from '../logs/log-action-type.enum';
 
 @Component({
   selector: 'app-student',
@@ -33,7 +35,8 @@ export class StudentComponent implements OnInit {
     private store: Store,
     private authService: AuthService,
     private studentService: StudentService,
-    private router: Router
+    private router: Router,
+    private logService: LogService  // Inject LogService
   ) {}
 
   ngOnInit(): void {
@@ -49,26 +52,47 @@ export class StudentComponent implements OnInit {
           console.log('Current User ID:', currentUser.uid);
           this.userId = currentUser.uid;
           
-       
+          // Log the login action
+          this.logService.logAction(
+            currentUser.uid,  // userId
+            'student',  // Role (could be dynamic based on the user role)
+            LogActionType.LOGIN,  // Action type
+            { message: 'User logged in' }  // Additional details
+          );
+          
           this.store.dispatch(loadStudentCourses({ studentId: currentUser.uid }));
           
           this.studentService.getCourses(currentUser.uid).subscribe({
             next: (courses) => {
               console.log('Courses fetched:', courses);
               this.store.dispatch(loadStudentCoursesSuccess({ courses }));
+
+              // Log the successful course fetch
+              this.logService.logAction(
+                currentUser.uid,  // userId
+                'student',  // Role
+                LogActionType.COURSE_ADDED,  // Action type
+                { courses }  // Additional details
+              );
             },
             error: (err) => {
               console.error('Error fetching courses:', err);
               this.store.dispatch(loadStudentCoursesFailure({ error: 'Error occurred while fetching courses.' }));
+
+              // Log the error in fetching courses
+              this.logService.logAction(
+                currentUser.uid,  // userId
+                'student',  // Role
+                LogActionType.LOGIN_FAILED,  // Action type
+                { error: 'Error occurred while fetching courses' }  // Additional details
+              );
             }
           });
 
-      
           this.courses$ = this.store.select(selectCourses);
           this.loading$ = this.store.select(selectLoading);
           this.error$ = this.store.select(selectError);
-          
-       
+
           this.courses$.subscribe(courses => {
             console.log('Courses from the store selector:', courses);
           });
@@ -102,7 +126,6 @@ export class StudentComponent implements OnInit {
     this.activeView = button;
     console.log('Button pressed:', button);
     
-    
     if (button === 'manageCourses') {
       this.manageView = '';
     }
@@ -124,24 +147,45 @@ export class StudentComponent implements OnInit {
   loadAvailableCourses() {
     if (this.userId) {
       this.availableCourses$ = this.studentService.getAvailableCourses(this.userId);
+      
+      // Log the load available courses action
+      this.logService.logAction(
+        this.userId,  // userId
+        'student',  // Role
+        LogActionType.COURSE_ADDED,  // Action type
+        { message: 'Loading available courses' }  // Additional details
+      );
     }
   }
 
   onLogout() {
     this.authService.logout().then(() => {
+      // Log the logout action
+      if (this.userId) {
+        this.logService.logAction(
+          this.userId,  // userId
+          'student',  // Role
+          LogActionType.LOGIN_FAILED,  // Action type
+          { message: 'User logged out' }  // Additional details
+        );
+      }
       this.router.navigate(['/']); 
     });
   }
 
-  
   enrollInCourse(courseId: string): void {
     if (this.userId) {
       this.store.dispatch(enrollInCourse({ studentId: this.userId, courseId }));
+      
+      // Log the enrollment action
+      this.logService.logAction(
+        this.userId,  // userId
+        'student',  // Role
+        LogActionType.COURSE_ENROLLED,  // Action type
+        { courseId }  // Additional details
+      );
     }
   }
-  
-  
-  
 
   unenrollFromCourse(courseId: string) {
     if (this.userId) {
@@ -150,11 +194,17 @@ export class StudentComponent implements OnInit {
           console.log('Successfully unenrolled from course:', courseId);
 
           this.loadAvailableCourses();
+          
+          // Log the unenrollment action
           if (this.userId) {
-            this.studentService.getCourses(this.userId).subscribe(courses => {
-              this.store.dispatch(loadStudentCoursesSuccess({ courses }));
-            });
+            this.logService.logAction(
+              this.userId,  // userId
+              'student',    // Role
+              LogActionType.LOGIN,  // Action type
+              { message: 'User logged in' }
+            );
           }
+          
         },
         error: (err) => {
           console.error('Error unenrolling from course:', err);

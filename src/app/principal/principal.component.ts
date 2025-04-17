@@ -4,11 +4,15 @@ import { Observable, of } from 'rxjs';
 import { loadCourses, addCourse, deleteCourse, updateCourse, assignTeacher, unassignTeacher } from './store/course.actions';
 import { selectAllCourses, selectLoading, selectError } from './store/course.selector';
 import { loadTeachers } from './store/teacher.actions';
-import { selectAllTeachers } from './store/teacher.selector';  // ✅ Selector for teachers
+import { selectAllTeachers } from './store/teacher.selector';  
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { LogService } from '../logs/log.service';
+import { LogActionType } from '../logs/log-action-type.enum';
+import { Firestore, collection, getDocs } from '@angular/fire/firestore';
+
 
 @Component({
   selector: 'app-principal',
@@ -19,48 +23,53 @@ import { Router } from '@angular/router';
 })
 export class PrincipalComponent implements OnInit {
   courses$: Observable<any[]> = of([]);  
-  teachers$: Observable<any[]> = of([]);  // ✅ Observable for teachers
+  teachers$: Observable<any[]> = of([]);  
   loading$: Observable<boolean> = of(false);
   error$: Observable<string | null> = of(null);
   selectedCourseId: string | null = null;
-  newCourseName: string = '';  // ✅ Stores new course name
-  selectedTeacherId: string | null = null;  // ✅ Stores selected teacher
+  newCourseName: string = '';  
+  selectedTeacherId: string | null = null;  
   editingCourseId: string | null = null;
   activeSection: string = '';
   isEditing: boolean = false;
   editingCourse: any = null;
   username: string | undefined;
   successMessage: string =  '';
+  logs: any[] = [];
   
 
-  constructor(private store: Store, private authService: AuthService, private router: Router) {}
+  constructor(
+    private store: Store,
+    private authService: AuthService,
+    private router: Router,
+    private logService: LogService,
+    private firestore: Firestore
+  ) {}
 
   ngOnInit(): void {
-
     this.authService.currentUserName$.subscribe(name => {
       this.username = name;
       console.log('Username:', this.username); 
     });
-    // Log initial state of observables
+   
     console.log('ngOnInit: Initializing component...');
     
-    // Selecting courses and teachers from the store
     this.courses$ = this.store.select(selectAllCourses);
-    this.teachers$ = this.store.select(selectAllTeachers);  // ✅ Fetch teachers
+    this.teachers$ = this.store.select(selectAllTeachers);  
     this.loading$ = this.store.select(selectLoading);
     this.error$ = this.store.select(selectError);
   
-    // Dispatching actions to load data
     console.log('Dispatching loadCourses and loadTeachers...');
     this.store.dispatch(loadCourses());
     
-    // Log to check if loadTeachers is being dispatched
     console.log('Dispatching loadTeachers...');
-    this.store.dispatch(loadTeachers());  // ✅ Load teachers on init
+    this.store.dispatch(loadTeachers());  
   }
+
   clearManageView(): void {
-    this.activeSection = 'courses'; // Or any default section you want to navigate to
+    this.activeSection = 'courses'; 
   }
+
   onAddCourse() {
     console.log('onAddCourse: New course name:', this.newCourseName);
   
@@ -72,59 +81,61 @@ export class PrincipalComponent implements OnInit {
     const newCourse = { id: Math.random().toString(36).substr(2, 9), name: this.newCourseName, teacherId: null };
     console.log('onAddCourse: Dispatching addCourse with:', newCourse);
     
-    // Dispatch addCourse action
     this.store.dispatch(addCourse({ course: newCourse }));
     
-    // Set the success message
+    this.logService.logAction(
+      'unknown',  
+      'unknown',  
+      LogActionType.COURSE_ADDED, 
+      { courseName: newCourse.name }  
+    );
+
     this.successMessage = 'Course added successfully!';
-    
-    // Clear the success message after 3 seconds
+  
     setTimeout(() => {
       this.successMessage = '';
     }, 3000);
     
-    this.newCourseName = '';  // Reset input field
+    this.newCourseName = ''; 
   }
-  
+
   onAssignTeacher() {
-    // Ensure that a course and teacher are selected
     if (!this.selectedCourseId || !this.selectedTeacherId) {
       alert('Please select both a course and a teacher!');
       return;
     }
   
-    // Dispatch the action to assign the teacher to the course
     this.store.dispatch(
       assignTeacher({
         courseId: this.selectedCourseId,
         teacherId: this.selectedTeacherId
       })
     );
-  
-    // Set the success message
+
+    this.logService.logAction(
+      'unknown',  
+      'unknown', 
+      LogActionType.TEACHER_ASSIGNED,  
+      { courseId: this.selectedCourseId, teacherId: this.selectedTeacherId }  
+    );
+
     this.successMessage = 'Teacher assigned successfully!';
   
-    // Clear the success message after 3 seconds
     setTimeout(() => {
       this.successMessage = '';
     }, 3000);
-  
-    // Optionally, you could reset the selection after assignment
-    // this.selectedCourseId = null;
-    // this.selectedTeacherId = null;
   }
-  
+
   openEditPopup(course: any) {
-    this.editingCourse = { ...course }; // Store full course object
+    this.editingCourse = { ...course };
     this.isEditing = true;
   }
-  
+
   closeEditPopup() {
     this.isEditing = false;
     this.editingCourse = null;
   }
 
-  // Update the course name based on selected course ID and the new course name
   onUpdateCourse(): void {
     if (!this.editingCourse || !this.editingCourse.id || !this.editingCourse.name.trim()) {
       console.log('onUpdateCourse: No course is selected or name is empty.');
@@ -134,22 +145,25 @@ export class PrincipalComponent implements OnInit {
   
     console.log(`onUpdateCourse: Updating course ID ${this.editingCourse.courseId} with new name: ${this.editingCourse.name}`);
   
-    // Dispatch update action with the correct course ID and name
     this.store.dispatch(updateCourse({ 
       courseId: this.editingCourse.courseId, 
       name: this.editingCourse.name 
     }));
   
-    // Close the edit popup and reset state
+
+    this.logService.logAction(
+      'unknown',  
+      'unknown', 
+      LogActionType.COURSE_UPDATED,  
+      { courseId: this.editingCourse.courseId, newName: this.editingCourse.name }  
+    );
+
     this.closeEditPopup();
-  
-    // Refresh the course list
+
     this.store.dispatch(loadCourses());
   
     console.log('onUpdateCourse: Course updated successfully');
   }
-  
-  
 
   onDeleteCourse(courseId: string) {
     console.log(`onDeleteCourse: Attempting to delete course with ID: ${courseId}`);
@@ -157,6 +171,13 @@ export class PrincipalComponent implements OnInit {
     if (confirm('Are you sure you want to delete this course?')) {
       console.log(`onDeleteCourse: Dispatching deleteCourse for courseId: ${courseId}`);
       this.store.dispatch(deleteCourse({ courseId }));
+      
+      this.logService.logAction(
+        'unknown',  
+        'unknown', 
+        LogActionType.COURSE_DELETED,  
+        { courseId } 
+      );
     } else {
       console.log('onDeleteCourse: Deletion canceled');
     }
@@ -165,6 +186,45 @@ export class PrincipalComponent implements OnInit {
   onUnassignTeacher(courseId: string) {
     console.log('onUnassignTeacher: Dispatching unassignTeacher for courseId:', courseId);
     this.store.dispatch(unassignTeacher({ courseId }));
+    
+    this.logService.logAction(
+      'unknown',  
+      'unknown', 
+      LogActionType.TEACHER_UNASSIGNED,  
+      { courseId } 
+    );
+  }
+
+  fetchLogs() {
+    console.log('[fetchLogs] Fetching logs from Firestore...');
+    const logsRef = collection(this.firestore, 'logs');
+  
+    getDocs(logsRef).then((querySnapshot) => {
+      this.logs = [];
+      console.log(`[fetchLogs] Total documents fetched: ${querySnapshot.size}`);
+  
+      if (querySnapshot.empty) {
+        console.warn('[fetchLogs] No logs found in the collection.');
+      }
+  
+      querySnapshot.forEach((doc) => {
+        const logData = doc.data();
+        console.log('[fetchLogs] Log entry:', logData);
+        this.logs.push(logData);
+      });
+  
+      console.log('[fetchLogs] Finished loading logs. Logs array:', this.logs);
+    }).catch((error) => {
+      console.error('[fetchLogs] Error fetching logs:', error);
+    });
+  }
+  
+
+  toggleSection(section: string) {
+    this.activeSection = section;
+    if (section === 'logs') {
+      this.fetchLogs(); 
+    }
   }
 
   onLogout() {
@@ -173,4 +233,8 @@ export class PrincipalComponent implements OnInit {
     });
   }
 
+  objectKeys(obj: any): string[] {
+    return obj ? Object.keys(obj) : [];
+  }
+  
 }

@@ -22,10 +22,8 @@
 
 
   .logout-btn {
-    
-   
     left: 50%;
-   margin-top: 20px;
+    margin-top: 20px;
     width: 100%; /* Adjust the width as needed */
     padding: 12px 24px; /* Add padding for a larger button */
     background-color: #dc3545; /* Red background to signify logout */
@@ -52,7 +50,6 @@
   
   /* Active effect when the button is clicked */
   .logout-btn:active {
-    transform: translateX(-50%) scale(0.95); /* Slight scale-down effect when clicked */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Reset shadow */
   }
   
@@ -672,6 +669,58 @@ button {
 /* Optional: Add a focus effect for accessibility */
 .save-btn:focus, .close-btn:focus {
     outline: 3px solid rgba(0, 0, 0, 0.2);
+}
+
+.logs-section {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.logs-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.logs-section li {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.logs-section li p {
+  margin: 5px 0;
+}
+
+.log-details {
+  margin-top: 0.5rem;
+  background-color: #f1f5f9;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.details-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.details-list li {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+}
+
+.details-list .key {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.details-list .value {
+  color: #4b5563;
+  word-break: break-word;
 }
 
 
